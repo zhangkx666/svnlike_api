@@ -53,7 +53,8 @@ public class RepositoryBaseService extends BaseService {
 
             // svn repository folder path
             String svnPath = rootPath + "/svn/" + repositoryName;
-            SVNURL svnurl = SVNRepositoryFactory.createLocalRepository(new File(svnPath), true, false);
+            SVNURL svnurl = SVNRepositoryFactory.createLocalRepository(
+                    new File(svnPath), true, false);
 
             // if autoMakeDir = true, create trunk, branches, tags directory
             if (autoMakeDir) {
