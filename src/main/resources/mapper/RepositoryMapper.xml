@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Repository">
+    <resultMap id="BaseResultMap" type="com.marssvn.api.model.entity.Repository">
+        <id property="id" column="id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="name" column="name"/>
+        <result property="path" column="path"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <insert id="add" parameterType="com.marssvn.api.model.entity.Repository" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO svn_repository (`user_id`, `name`, `path`, `description`)
+            VALUE (#{userId}, #{name}, #{path}, #{description});
+    </insert>
+
+    <update id="updateById" parameterType="com.marssvn.api.model.entity.Repository">
+        UPDATE svn_repository
+        SET `name` = #{name}, `path` = #{path}, `description` = #{description}
+        WHERE `id` = #{id};
+    </update>
+
+    <delete id="deleteById" parameterType="java.util.HashMap">
+        DELETE FROM svn_repository WHERE id = #{id}
+    </delete>
+
+    <select id="selectOne" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+        SELECT
+            `id`,
+            `name`,
+            `path`,
+            `description`,
+            `created_at`,
+            `updated_at`
+        FROM svn_repository
+        WHERE id = #{id};
+    </select>
+
+    <select id="selectMany" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+        SELECT
+            `id`,
+            `name`,
+            `path`,
+            `description`,
+            `created_at`,
+            `updated_at`
+        FROM svn_repository
+        <where>
+            <if test="keyword != null and keyword != ''">
+                <bind name="keyword" value="'%' + _parameter.keyword + '%'" />
+                `name` like #{keyword}
+            </if>
+        </where>
+        ORDER BY `id` DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="selectCountByName" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        SELECT count(1) AS `count`
+        FROM svn_repository
+        WHERE `name` = #{name};
+    </select>
+</mapper>
