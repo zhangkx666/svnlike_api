@@ -1,8 +1,9 @@
 package com.marssvn.api.controller;
 
 import com.marssvn.api.model.JsonResult;
-import com.marssvn.api.model.dto.repository.RepositoryInputDTO;
 import com.marssvn.api.model.dto.repository.RepositoryConditionDTO;
+import com.marssvn.api.model.dto.repository.RepositoryInputDTO;
+import com.marssvn.api.model.dto.repository.RepositoryTreeConditionDTO;
 import com.marssvn.api.model.entity.Repository;
 import com.marssvn.api.service.business.IRepositoryService;
 import com.marssvn.utils.exception.BusinessException;
@@ -32,7 +33,7 @@ public class RepositoryController extends BaseController {
     /**
      * Get repository by repository id
      * @param id repository id
-     * @return Repository
+     * @return JsonResult
      */
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     public JsonResult show(@PathVariable(value="id") int id) {
@@ -42,6 +43,16 @@ public class RepositoryController extends BaseController {
             throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
 
         return new JsonResult(repository);
+    }
+
+    /**
+     * Get repository tree
+     * @param id repository id
+     * @return JsonResult
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}/tree")
+    public JsonResult tree(@PathVariable("id") int id, RepositoryTreeConditionDTO input) {
+        return new JsonResult(repositoryService.getRepositoryTreeById(id, input.getPath()));
     }
 
     /**

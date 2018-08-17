@@ -1,6 +1,7 @@
 package com.marssvn.api.model.dto.repository;
 
 
+import com.marssvn.api.model.dto.RequestDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
-public class RepositoryInputDTO {
+public class RepositoryInputDTO extends RequestDTO {
 
     /**
      * Repository name

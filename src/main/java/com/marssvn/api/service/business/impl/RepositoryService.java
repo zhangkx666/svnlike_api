@@ -2,6 +2,7 @@ package com.marssvn.api.service.business.impl;
 
 import com.marssvn.api.model.dto.repository.RepositoryConditionDTO;
 import com.marssvn.api.model.dto.repository.RepositoryInputDTO;
+import com.marssvn.api.model.dto.repository.RepositoryTreeDTO;
 import com.marssvn.api.model.entity.Repository;
 import com.marssvn.api.service.business.IRepositoryService;
 import com.marssvn.api.service.base.RepositoryBaseService;
@@ -67,14 +68,14 @@ public class RepositoryService extends BaseService implements IRepositoryService
             throw new BusinessException(message.error("repository.name.duplicate.create", repositoryName));
 
         // 2. create repository
-        SVNURL svnUrl = repositoryBaseService.createSvnRepository(repositoryName, input.getAutoMakeDir());
+        SVNURL svnurl = repositoryBaseService.createSvnRepository(repositoryName, input.getAutoMakeDir());
 
         // 3. write repository db data
         Repository repository = new Repository();
         repository.setUserId(uvo.getId());
         repository.setName(repositoryName);
         repository.setDescription(input.getDescription());
-        repository.setPath(svnUrl.getPath());
+        repository.setPath(FileUtils.getFile(svnurl.getPath()).getPath());
 
         try {
             commonDAO.execute("Repository.add", repository);
@@ -82,7 +83,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
 
             // 3.1 delete repository folder and throw business exception when insert failed
             try {
-                FileUtils.deleteDirectory(new File(svnUrl.getPath()));
+                FileUtils.deleteDirectory(new File(repository.getPath()));
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -154,6 +155,19 @@ public class RepositoryService extends BaseService implements IRepositoryService
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public RepositoryTreeDTO getRepositoryTreeById(int id, String path) {
+
+        // query repository
+        Repository repository = this.getRepositoryById(id);
+        if (repository == null)
+            throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
+
+        // get repository tree
+        String repositoryPath = "svn://127.0.0.1/" + repository.getName();
+        return repositoryBaseService.getRepositoryTree(repositoryPath, repository.getName(), path);
     }
 
     /**

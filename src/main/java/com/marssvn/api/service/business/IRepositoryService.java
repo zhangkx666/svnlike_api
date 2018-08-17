@@ -2,9 +2,9 @@ package com.marssvn.api.service.business;
 
 import com.marssvn.api.model.dto.repository.RepositoryConditionDTO;
 import com.marssvn.api.model.dto.repository.RepositoryInputDTO;
+import com.marssvn.api.model.dto.repository.RepositoryTreeDTO;
 import com.marssvn.api.model.entity.Repository;
 import com.marssvn.utils.exception.BusinessException;
-import org.tmatesoft.svn.core.SVNURL;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -49,4 +49,6 @@ public interface IRepositoryService {
      * @param id repositoryId
      */
     void deleteRepositoryById(int id);
+
+    RepositoryTreeDTO getRepositoryTreeById(int id, String path);
 }

@@ -1,12 +1,13 @@
 package com.marssvn.api.model.dto.repository;
 
 
+import com.marssvn.api.model.dto.RequestDTO;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class RepositoryConditionDTO {
+public class RepositoryConditionDTO extends RequestDTO {
 
     /**
      * Search keyword
