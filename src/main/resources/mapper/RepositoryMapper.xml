@@ -49,8 +49,8 @@
         FROM svn_repository
         <where>
             <if test="keyword != null and keyword != ''">
-                <bind name="keyword" value="'%' + _parameter.keyword + '%'" />
-                `name` like #{keyword}
+                <bind name="keywordLike" value="'%' + _parameter.keyword + '%'" />
+                `name` like #{keywordLike}
             </if>
         </where>
         ORDER BY `id` DESC
