@@ -63,7 +63,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
         String repositoryName = input.getName();
 
         // 1. repository exists check
-        if (repositoryNameExists(repositoryName))
+        if (_repositoryNameExists(repositoryName))
             throw new BusinessException(message.error("repository.name.duplicate.create", repositoryName));
 
         // 2. create repository
@@ -107,7 +107,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
             throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
 
         // new repository name
-        if (repositoryNameExists(newRepositoryName))
+        if (_repositoryNameExists(newRepositoryName))
             throw new BusinessException(message.error("repository.name.duplicate.update", newRepositoryName));
 
         // if new repository name not equals old name
@@ -161,7 +161,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
      * @param repositoryName repository name
      * @return boolean
      */
-    private boolean repositoryNameExists(String repositoryName) {
+    private boolean _repositoryNameExists(String repositoryName) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("name", repositoryName);
         int count = commonDAO.queryForObject("Repository.selectCountByName", params, Integer.class);
