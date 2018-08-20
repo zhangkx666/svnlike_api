@@ -50,11 +50,10 @@ public class StringUtils {
      * @return linux path
      */
     public static String windowsPath2LinuxPath(String windowsPath) {
-        if (windowsPath == null) return null;
-
-        windowsPath = windowsPath.replace("\\", "/");
+        if (windowsPath == null)
+            return null;
         if (!windowsPath.startsWith("/"))
             windowsPath = "/" + windowsPath;
-        return windowsPath;
+        return windowsPath.replace("\\", "/");
     }
 }
