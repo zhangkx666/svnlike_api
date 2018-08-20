@@ -13,8 +13,8 @@
     </resultMap>
 
     <insert id="add" parameterType="com.marssvn.api.model.entity.Repository" keyProperty="id" useGeneratedKeys="true">
-        INSERT INTO svn_repository (`user_id`, `name`, `path`, `description`, `protocol`)
-            VALUE (#{userId}, #{name}, #{path}, #{description}, #{protocol});
+        INSERT INTO svn_repository (`project_id`, `user_id`, `name`, `path`, `description`, `protocol`)
+            VALUE (#{projectId}, #{userId}, #{name}, #{path}, #{description}, #{protocol});
     </insert>
 
     <update id="updateById" parameterType="com.marssvn.api.model.entity.Repository">
@@ -30,6 +30,8 @@
     <select id="selectOne" parameterType="java.util.HashMap" resultMap="BaseResultMap">
         SELECT
             `id`,
+            `project_id`,
+            `user_id`,
             `name`,
             `path`,
             `description`,
@@ -43,6 +45,7 @@
     <select id="selectMany" parameterType="java.util.HashMap" resultMap="BaseResultMap">
         SELECT
             `id`,
+            `project_id`,
             `user_id`,
             `name`,
             `path`,

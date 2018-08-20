@@ -76,6 +76,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
         Repository repository = new Repository();
         repository.setUserId(uvo.getId());
         repository.setName(repositoryName);
+        repository.setProjectId(input.getProjectId());
         repository.setDescription(input.getDescription());
         repository.setPath(svnurl.getPath());
         repository.setProtocol(FILE);

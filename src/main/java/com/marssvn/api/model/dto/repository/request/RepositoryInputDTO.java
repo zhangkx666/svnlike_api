@@ -12,6 +12,11 @@ import javax.validation.constraints.NotBlank;
 public class RepositoryInputDTO extends RequestDTO {
 
     /**
+     * project id
+     */
+    private Integer projectId;
+
+    /**
      * Repository name
      */
     @NotBlank(message = "{repository.name.blank}")

@@ -32,16 +32,6 @@ public class SvnDirectory extends Entity {
     private String fullPath;
 
     /**
-     * sub directories
-     */
-    private List<SvnDirectory> children;
-
-    /**
-     * files
-     */
-    private List<SvnFile> files;
-
-    /**
      * revision
      */
     private long revision;
@@ -61,4 +51,14 @@ public class SvnDirectory extends Entity {
      * commit message
      */
     private String commitMessage;
+
+    /**
+     * files
+     */
+    private List<SvnFile> files;
+
+    /**
+     * sub directories
+     */
+    private List<SvnDirectory> children;
 }
