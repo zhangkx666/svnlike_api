@@ -19,7 +19,7 @@ public class SvnFile extends Entity {
     /**
      * file type
      */
-    private String type;
+    private String type = "file";
 
     /**
      * file extension

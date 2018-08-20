@@ -1,4 +1,4 @@
-package com.marssvn.api.model;
+package com.marssvn.api.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.marssvn.utils.message.Message;

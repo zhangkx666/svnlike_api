@@ -1,4 +1,4 @@
-package com.marssvn.api.model.dto.repository;
+package com.marssvn.api.model.dto.repository.request;
 
 
 import com.marssvn.api.model.dto.RequestDTO;

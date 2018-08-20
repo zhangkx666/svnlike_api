@@ -7,13 +7,14 @@
         <result property="userId" column="user_id"/>
         <result property="name" column="name"/>
         <result property="path" column="path"/>
+        <result property="protocol" column="protocol"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
     <insert id="add" parameterType="com.marssvn.api.model.entity.Repository" keyProperty="id" useGeneratedKeys="true">
-        INSERT INTO svn_repository (`user_id`, `name`, `path`, `description`)
-            VALUE (#{userId}, #{name}, #{path}, #{description});
+        INSERT INTO svn_repository (`user_id`, `name`, `path`, `description`, `protocol`)
+            VALUE (#{userId}, #{name}, #{path}, #{description}, #{protocol});
     </insert>
 
     <update id="updateById" parameterType="com.marssvn.api.model.entity.Repository">
@@ -32,6 +33,7 @@
             `name`,
             `path`,
             `description`,
+            `protocol`,
             `created_at`,
             `updated_at`
         FROM svn_repository
@@ -44,6 +46,7 @@
             `name`,
             `path`,
             `description`,
+            `protocol`,
             `created_at`,
             `updated_at`
         FROM svn_repository

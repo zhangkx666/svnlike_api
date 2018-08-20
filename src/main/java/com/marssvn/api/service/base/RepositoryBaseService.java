@@ -1,16 +1,17 @@
 package com.marssvn.api.service.base;
 
-import com.marssvn.api.model.dto.repository.RepositoryTreeDTO;
+import com.marssvn.api.model.dto.repository.response.RepositoryTreeDTO;
 import com.marssvn.api.model.entity.SvnDirectory;
 import com.marssvn.api.model.entity.SvnFile;
 import com.marssvn.utils.common.StringUtils;
 import com.marssvn.utils.exception.BusinessException;
-import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Component;
 import org.tmatesoft.svn.core.*;
-import org.tmatesoft.svn.core.io.ISVNEditor;
+import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
+import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
+import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import java.io.File;
@@ -27,23 +28,35 @@ public class RepositoryBaseService extends BaseService {
     private static final String INIT_COMMENT = "init";
 
     /**
+     * SVNClientManager
+     */
+    private static SVNClientManager svnClientManager;
+
+    /**
      * Create empty directory
      *
-     * @param svnurl SVNURL
-     * @param directoryName String
+     * @param svnurls SVNURL
+     * @param comment String
      */
-    public void createDirectory(SVNURL svnurl, String directoryName, String comment) {
+    private void _createDirectory(SVNURL[] svnurls, String comment) {
+
         try {
-            SVNRepository repository = SVNRepositoryFactory.create(svnurl);
-            repository.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager());
-            ISVNEditor editor = repository.getCommitEditor(comment, null);
-            editor.openRoot(-1L);
-            editor.addDir(directoryName, null, -1L);
-            editor.closeDir();
-            editor.closeDir();
-            editor.closeEdit();
+//            SVNRepository repository = SVNRepositoryFactory.create(svnurl);
+//            repository.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager());
+//            ISVNEditor editor = repository.getCommitEditor(comment, null);
+//            editor.openRoot(-1L);
+//            editor.addDir(directoryName, null, -1L);
+//            editor.closeDir();
+//            editor.closeDir();
+//            editor.closeEdit();
+
+//            FSRepositoryFactory.setup();
+            DefaultSVNOptions svnOptions = SVNWCUtil.createDefaultOptions(true);
+            svnClientManager = SVNClientManager.newInstance(svnOptions, "marssvn", null);
+            svnClientManager.getCommitClient().doMkDir(svnurls, comment);
         } catch (SVNException e) {
             e.printStackTrace();
+            throw new BusinessException(e.getMessage());
         }
     }
 
@@ -66,14 +79,18 @@ public class RepositoryBaseService extends BaseService {
             // if autoMakeDir = true, create trunk, branches, tags directory
             if (autoMakeDir) {
 
-                // create trunk
-                createDirectory(svnurl, "trunk", INIT_COMMENT);
+                String url = "file://" + svnurl.getPath();
+
+                // trunk
+                SVNURL trunk = SVNURL.parseURIEncoded(url + "/trunk");
 
                 // create branches
-                createDirectory(svnurl, "branches", INIT_COMMENT);
+                SVNURL branches = SVNURL.parseURIEncoded(url + "/branches");
 
                 // create tags
-                createDirectory(svnurl, "tags", INIT_COMMENT);
+                SVNURL tags = SVNURL.parseURIEncoded(url + "/tags");
+
+                _createDirectory(new SVNURL[]{trunk, branches, tags}, INIT_COMMENT);
             }
 
             return svnurl;
@@ -96,8 +113,10 @@ public class RepositoryBaseService extends BaseService {
      */
     public RepositoryTreeDTO getRepositoryTree(String repositoryPath, String repositoryName, String path) {
         try {
-            SVNRepository repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(repositoryPath));
-            repository.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager());
+//            FSRepositoryFactory.setup();
+            SVNURL svnurl = SVNURL.parseURIEncoded(repositoryPath);
+            SVNRepository repository = SVNRepositoryFactory.create(svnurl);
+//            repository.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager());
 
             SvnDirectory directory = new SvnDirectory();
             directory.setName(repositoryName);
@@ -110,11 +129,14 @@ public class RepositoryBaseService extends BaseService {
             if (StringUtils.isNotBlank(path)) {
                 SVNDirEntry svnDirEntry = repository.getDir(path, -1L, true, null);
 
+                // date, author, revision, commitMessage
+                directory.copyPropertiesFrom(svnDirEntry);
+
+                // name
                 String[] strArr = path.split("/");
                 directory.setName(strArr[strArr.length - 1]);
-                directory.setDate(svnDirEntry.getDate());
-                directory.setAuthor(svnDirEntry.getAuthor());
-                directory.setRevision(svnDirEntry.getRevision());
+
+                // path and full path
                 directory.setPath(path);
                 directory.setFullPath(svnRootPath + "/" + directory.getPath());
             }
@@ -124,7 +146,8 @@ public class RepositoryBaseService extends BaseService {
             RepositoryTreeDTO repositoryTreeDTO = new RepositoryTreeDTO();
             repositoryTreeDTO.setUuid(repository.getRepositoryUUID(false));
             repositoryTreeDTO.setRoot(svnRootPath);
-            repositoryTreeDTO.setDirectory(directory);
+            repositoryTreeDTO.setProtocol(svnurl.getProtocol());
+            repositoryTreeDTO.setTree(directory);
             return repositoryTreeDTO;
         } catch (SVNException e) {
             e.printStackTrace();
@@ -142,16 +165,18 @@ public class RepositoryBaseService extends BaseService {
         Collection entries = repository.getDir(path, -1L, null, (Collection) null);
         for (Object item : entries) {
             SVNDirEntry svnDirEntry = (SVNDirEntry) item;
+            String realPath = StringUtils.isBlank(path) ? svnDirEntry.getName() : path + "/" + svnDirEntry.getName();
 
             // if entry is directory
             if (svnDirEntry.getKind() == SVNNodeKind.DIR) {
                 SvnDirectory directory = new SvnDirectory();
-                directory.setName(svnDirEntry.getName());
-                directory.setDate(svnDirEntry.getDate());
-                directory.setAuthor(svnDirEntry.getAuthor());
-                directory.setRevision(svnDirEntry.getRevision());
-                directory.setPath(StringUtils.isBlank(path) ? svnDirEntry.getName() : path + "/" + svnDirEntry.getName());
-                directory.setFullPath(svnRootPath + "/" + directory.getPath());
+
+                // name, date, author, revision, commitMessage
+                directory.copyPropertiesFrom(svnDirEntry);
+
+                // path and full path
+                directory.setPath(realPath);
+                directory.setFullPath(svnRootPath + "/" + realPath);
 
                 // get sub directories
                 _getDirectory(repository, directory);
@@ -159,21 +184,23 @@ public class RepositoryBaseService extends BaseService {
                 directoryList.add(directory);
             } else {
                 SvnFile file = new SvnFile();
-                file.setName(svnDirEntry.getName());
+
+                // name, date, author, revision, size, commitMessage
+                file.copyPropertiesFrom(svnDirEntry);
+
+                // extension
                 String[] strArr = file.getName().split("\\.");
                 file.setExtension(strArr[strArr.length - 1]);
-                file.setDate(svnDirEntry.getDate());
-                file.setAuthor(svnDirEntry.getAuthor());
-                file.setRevision(svnDirEntry.getRevision());
-                file.setPath(StringUtils.isBlank(path) ? svnDirEntry.getName() : path + "/" + svnDirEntry.getName());
-                file.setFullPath(svnRootPath + "/" + file.getPath());
-                file.setSize(svnDirEntry.getSize());
 
+                // path and full path
+                file.setPath(realPath);
+                file.setFullPath(svnRootPath + "/" + realPath);
+
+                // lock owner
                 SVNLock svnLock = svnDirEntry.getLock();
                 if (svnLock != null) {
                     file.setLockOwner(svnLock.getOwner());
                 }
-                file.setCommitMessage(svnDirEntry.getCommitMessage());
                 fileList.add(file);
             }
         }

@@ -58,7 +58,7 @@ public class SvnDirectory extends Entity {
     private Date date;
 
     /**
-     * lockOwner
+     * commit message
      */
-    private String lockOwner;
+    private String commitMessage;
 }

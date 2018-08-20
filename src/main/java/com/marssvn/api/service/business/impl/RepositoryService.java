@@ -1,11 +1,11 @@
 package com.marssvn.api.service.business.impl;
 
-import com.marssvn.api.model.dto.repository.RepositoryConditionDTO;
-import com.marssvn.api.model.dto.repository.RepositoryInputDTO;
-import com.marssvn.api.model.dto.repository.RepositoryTreeDTO;
+import com.marssvn.api.model.dto.repository.request.RepositoryConditionDTO;
+import com.marssvn.api.model.dto.repository.request.RepositoryInputDTO;
+import com.marssvn.api.model.dto.repository.response.RepositoryTreeDTO;
 import com.marssvn.api.model.entity.Repository;
-import com.marssvn.api.service.business.IRepositoryService;
 import com.marssvn.api.service.base.RepositoryBaseService;
+import com.marssvn.api.service.business.IRepositoryService;
 import com.marssvn.utils.common.StringUtils;
 import com.marssvn.utils.exception.BusinessException;
 import org.apache.commons.io.FileUtils;
@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.marssvn.utils.enums.ESvnProtocol.FILE;
+
 /**
  * Repository Service
  */
@@ -29,7 +31,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
     private RepositoryBaseService repositoryBaseService;
 
     @Override
-    public List<Object> getRepositoryList(RepositoryConditionDTO input) {
+    public List<Repository> getRepositoryList(RepositoryConditionDTO input) {
 
         // Query parameters
         HashMap<String, Object> params = new HashMap<>();
@@ -75,7 +77,8 @@ public class RepositoryService extends BaseService implements IRepositoryService
         repository.setUserId(uvo.getId());
         repository.setName(repositoryName);
         repository.setDescription(input.getDescription());
-        repository.setPath(FileUtils.getFile(svnurl.getPath()).getPath());
+        repository.setPath(svnurl.getPath());
+        repository.setProtocol(FILE);
 
         try {
             commonDAO.execute("Repository.add", repository);
@@ -87,6 +90,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+            e.printStackTrace();
             throw new BusinessException(message.error("repository.create.failed"));
         }
 
@@ -157,6 +161,12 @@ public class RepositoryService extends BaseService implements IRepositoryService
         }
     }
 
+    /**
+     * get repository tree
+     * @param id repository id
+     * @param path repository path
+     * @return repository tree
+     */
     @Override
     public RepositoryTreeDTO getRepositoryTreeById(int id, String path) {
 
@@ -166,7 +176,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
             throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
 
         // get repository tree
-        String repositoryPath = "svn://127.0.0.1/" + repository.getName();
+        String repositoryPath = repository.getProtocol().getPrefix() + repository.getPath();
         return repositoryBaseService.getRepositoryTree(repositoryPath, repository.getName(), path);
     }
 

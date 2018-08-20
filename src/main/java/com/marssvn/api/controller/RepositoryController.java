@@ -1,9 +1,11 @@
 package com.marssvn.api.controller;
 
-import com.marssvn.api.model.JsonResult;
-import com.marssvn.api.model.dto.repository.RepositoryConditionDTO;
-import com.marssvn.api.model.dto.repository.RepositoryInputDTO;
-import com.marssvn.api.model.dto.repository.RepositoryTreeConditionDTO;
+import com.marssvn.api.model.dto.JsonResult;
+import com.marssvn.api.model.dto.ResponseDTO;
+import com.marssvn.api.model.dto.repository.request.RepositoryConditionDTO;
+import com.marssvn.api.model.dto.repository.request.RepositoryInputDTO;
+import com.marssvn.api.model.dto.repository.request.RepositoryTreeConditionDTO;
+import com.marssvn.api.model.dto.repository.response.RepositoryDTO;
 import com.marssvn.api.model.entity.Repository;
 import com.marssvn.api.service.business.IRepositoryService;
 import com.marssvn.utils.exception.BusinessException;
@@ -12,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/repository")
@@ -23,30 +27,35 @@ public class RepositoryController extends BaseController {
 
     /**
      * Get repositories
+     *
      * @return JsonResult
      */
     @RequestMapping(method = RequestMethod.GET)
     public JsonResult index(RepositoryConditionDTO input) {
-        return new JsonResult(repositoryService.getRepositoryList(input));
+        List<Repository> repositoryList = repositoryService.getRepositoryList(input);
+        List<ResponseDTO> responseDTOList = new ArrayList<>();
+        repositoryList.forEach(item -> responseDTOList.add(item.convertTo(RepositoryDTO.class)));
+        return new JsonResult(responseDTOList);
     }
 
     /**
      * Get repository by repository id
+     *
      * @param id repository id
      * @return JsonResult
      */
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
-    public JsonResult show(@PathVariable(value="id") int id) {
+    public JsonResult show(@PathVariable(value = "id") int id) {
         Repository repository = repositoryService.getRepositoryById(id);
-
         if (repository == null)
             throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
 
-        return new JsonResult(repository);
+        return new JsonResult(repository.convertTo(RepositoryDTO.class));
     }
 
     /**
      * Get repository tree
+     *
      * @param id repository id
      * @return JsonResult
      */
@@ -57,6 +66,7 @@ public class RepositoryController extends BaseController {
 
     /**
      * Create repository
+     *
      * @return JsonResult
      */
     @RequestMapping(method = RequestMethod.POST)
@@ -78,7 +88,8 @@ public class RepositoryController extends BaseController {
 
     /**
      * Update repository
-     * @param id repository id
+     *
+     * @param id    repository id
      * @param input parameters
      * @return JsonResult
      * @throws BusinessException ex
@@ -93,6 +104,7 @@ public class RepositoryController extends BaseController {
 
     /**
      * Delete Repository
+     *
      * @return JsonResult
      * @throws BusinessException ex
      */

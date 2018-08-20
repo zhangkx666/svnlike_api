@@ -1,6 +1,6 @@
 package com.marssvn.utils.exception;
 
-import com.marssvn.api.model.JsonResult;
+import com.marssvn.api.model.dto.JsonResult;
 import com.marssvn.utils.message.Message;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;

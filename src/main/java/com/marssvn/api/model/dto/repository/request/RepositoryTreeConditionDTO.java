@@ -1,8 +1,7 @@
-package com.marssvn.api.model.dto.repository;
+package com.marssvn.api.model.dto.repository.request;
 
 
 import com.marssvn.api.model.dto.RequestDTO;
-import com.marssvn.utils.common.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,4 +1,7 @@
 package com.marssvn.api.model.dto;
 
-public class RequestDTO {
+import com.marssvn.utils.model.BaseBean;
+
+public class RequestDTO extends BaseBean {
+
 }

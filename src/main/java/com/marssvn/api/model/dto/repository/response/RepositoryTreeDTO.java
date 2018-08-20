@@ -1,4 +1,4 @@
-package com.marssvn.api.model.dto.repository;
+package com.marssvn.api.model.dto.repository.response;
 
 import com.marssvn.api.model.dto.ResponseDTO;
 import com.marssvn.api.model.entity.SvnDirectory;
@@ -19,8 +19,14 @@ public class RepositoryTreeDTO extends ResponseDTO {
      */
     private String root;
 
+
+    /**
+     * repository protocol
+     */
+    private String protocol;
+
     /**
      * directory
      */
-    private SvnDirectory directory;
+    private SvnDirectory tree;
 }
