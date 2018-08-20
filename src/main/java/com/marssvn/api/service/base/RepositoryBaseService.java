@@ -100,8 +100,15 @@ public class RepositoryBaseService extends BaseService {
             if (StringUtils.isNotBlank(path)) {
                 SVNDirEntry svnDirEntry = repository.getDir(path, -1L, true, null);
 
-                // date, author, revision, commitMessage
+                // if the path is a file
+                if (svnDirEntry.getKind() == SVNNodeKind.FILE)
+                    throw new BusinessException(message.error("repository.path.not_directory", path));
+
+                // author, revision, commitMessage
                 directory.copyPropertiesFrom(svnDirEntry);
+
+                // date
+                directory.setUpdatedAt(svnDirEntry.getDate());
 
                 // name
                 String[] strArr = path.split("/");
@@ -112,6 +119,7 @@ public class RepositoryBaseService extends BaseService {
                 directory.setFullPath(svnRootPath + "/" + directory.getPath());
             }
 
+            // get sub directories
             _getDirectory(repository, directory);
 
             RepositoryTreeDTO repositoryTreeDTO = new RepositoryTreeDTO();
@@ -122,6 +130,9 @@ public class RepositoryBaseService extends BaseService {
             return repositoryTreeDTO;
         } catch (SVNException e) {
             logger.error(e.getMessage());
+            if (160013 == e.getErrorMessage().getErrorCode().getCode())
+                throw new BusinessException(message.error("repository.path.not_exists", path));
+
             throw new BusinessException(e.getMessage());
         }
     }
@@ -149,8 +160,11 @@ public class RepositoryBaseService extends BaseService {
             if (svnDirEntry.getKind() == SVNNodeKind.DIR) {
                 SVNDirectory directory = new SVNDirectory();
 
-                // name, date, author, revision, commitMessage
+                // name, author, revision, commitMessage
                 directory.copyPropertiesFrom(svnDirEntry);
+
+                // date
+                directory.setUpdatedAt(svnDirEntry.getDate());
 
                 // path and full path
                 directory.setPath(realPath);
@@ -163,8 +177,11 @@ public class RepositoryBaseService extends BaseService {
             } else {
                 SVNFile file = new SVNFile();
 
-                // name, date, author, revision, size, commitMessage
+                // name, author, revision, size, commitMessage
                 file.copyPropertiesFrom(svnDirEntry);
+
+                // data
+                file.setUpdatedAt(svnDirEntry.getDate());
 
                 // extension
                 String[] strArr = file.getName().split("\\.");

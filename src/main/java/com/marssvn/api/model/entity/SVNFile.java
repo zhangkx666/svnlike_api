@@ -11,14 +11,14 @@ import java.util.Date;
 public class SVNFile extends Entity {
 
     /**
-     * file name
-     */
-    private String name;
-
-    /**
      * file type
      */
     private String type = "file";
+
+    /**
+     * file name
+     */
+    private String name;
 
     /**
      * file extension
@@ -54,15 +54,15 @@ public class SVNFile extends Entity {
      * date
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date date;
-
-    /**
-     * lockOwner
-     */
-    private SVNLockInfo lock;
+    private Date updatedAt;
 
     /**
      * commit message
      */
     private String commitMessage;
+
+    /**
+     * lockOwner
+     */
+    private SVNLockInfo lock;
 }

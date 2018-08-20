@@ -12,14 +12,14 @@ import java.util.List;
 public class SVNDirectory extends Entity {
 
     /**
-     * directory name
-     */
-    private String name;
-
-    /**
      * file type
      */
     private String type = "dir";
+
+    /**
+     * directory name
+     */
+    private String name;
 
     /**
      * svn directory path
@@ -45,7 +45,7 @@ public class SVNDirectory extends Entity {
      * date
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date date;
+    private Date updatedAt;
 
     /**
      * commit message
