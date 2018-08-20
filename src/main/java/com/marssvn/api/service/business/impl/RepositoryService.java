@@ -83,18 +83,15 @@ public class RepositoryService extends BaseService implements IRepositoryService
         // 3. create trunk, branches, tags
         // if autoMakeDir = true, create trunk, branches, tags directory
         if (input.getAutoMakeDir()) {
-
             try {
-                String url = "file://" + svnurl.getPath();
-
                 // trunk
-                SVNURL trunk = SVNURL.parseURIEncoded(url + "/trunk");
+                SVNURL trunk = svnurl.appendPath("trunk", false);
 
                 // create branches
-                SVNURL branches = SVNURL.parseURIEncoded(url + "/branches");
+                SVNURL branches = svnurl.appendPath("branches", false);
 
                 // create tags
-                SVNURL tags = SVNURL.parseURIEncoded(url + "/tags");
+                SVNURL tags = svnurl.appendPath("tags", false);
 
                 repositoryBaseService.createDirectory(new SVNURL[]{trunk, branches, tags}, INIT_COMMENT);
             } catch (SVNException | BusinessException e) {
