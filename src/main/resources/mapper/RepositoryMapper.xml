@@ -43,6 +43,7 @@
     <select id="selectMany" parameterType="java.util.HashMap" resultMap="BaseResultMap">
         SELECT
             `id`,
+            `user_id`,
             `name`,
             `path`,
             `description`,

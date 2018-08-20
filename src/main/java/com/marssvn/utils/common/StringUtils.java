@@ -41,4 +41,20 @@ public class StringUtils {
     public static boolean isNotBlank(String str) {
         return !isBlank(str);
     }
+
+    /**
+     * convert windows path to linux path
+     * eg. C:\windows\log -> /C:/windows/log
+     *
+     * @param windowsPath windows path
+     * @return linux path
+     */
+    public static String windowsPath2LinuxPath(String windowsPath) {
+        if (windowsPath == null) return null;
+
+        windowsPath = windowsPath.replace("\\", "/");
+        if (!windowsPath.startsWith("/"))
+            windowsPath = "/" + windowsPath;
+        return windowsPath;
+    }
 }

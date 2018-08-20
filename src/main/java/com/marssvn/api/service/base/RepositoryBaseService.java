@@ -28,11 +28,6 @@ public class RepositoryBaseService extends BaseService {
     private static final String INIT_COMMENT = "init";
 
     /**
-     * SVNClientManager
-     */
-    private static SVNClientManager svnClientManager;
-
-    /**
      * Create empty directory
      *
      * @param svnurls SVNURL
@@ -52,7 +47,7 @@ public class RepositoryBaseService extends BaseService {
 
 //            FSRepositoryFactory.setup();
             DefaultSVNOptions svnOptions = SVNWCUtil.createDefaultOptions(true);
-            svnClientManager = SVNClientManager.newInstance(svnOptions, "marssvn", null);
+            SVNClientManager svnClientManager = SVNClientManager.newInstance(svnOptions, "marssvn", null);
             svnClientManager.getCommitClient().doMkDir(svnurls, comment);
         } catch (SVNException e) {
             e.printStackTrace();

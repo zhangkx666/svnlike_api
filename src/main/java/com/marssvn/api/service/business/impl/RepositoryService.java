@@ -127,7 +127,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
 
             // reset name and path
             repository.setName(newRepositoryName);
-            repository.setPath(newFolder.getPath());
+            repository.setPath(StringUtils.windowsPath2LinuxPath(newFolder.getPath()));
         }
 
         repository.setDescription(input.getDescription());
