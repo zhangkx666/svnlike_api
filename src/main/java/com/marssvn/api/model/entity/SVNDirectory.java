@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SvnDirectory extends Entity {
+public class SVNDirectory extends Entity {
 
     /**
      * directory name
@@ -55,10 +55,10 @@ public class SvnDirectory extends Entity {
     /**
      * files
      */
-    private List<SvnFile> files;
+    private List<SVNFile> files;
 
     /**
      * sub directories
      */
-    private List<SvnDirectory> children;
+    private List<SVNDirectory> children;
 }

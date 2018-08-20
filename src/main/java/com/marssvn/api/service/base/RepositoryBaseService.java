@@ -1,12 +1,14 @@
 package com.marssvn.api.service.base;
 
 import com.marssvn.api.model.dto.repository.response.RepositoryTreeDTO;
-import com.marssvn.api.model.entity.SvnDirectory;
-import com.marssvn.api.model.entity.SvnFile;
+import com.marssvn.api.model.entity.SVNDirectory;
+import com.marssvn.api.model.entity.SVNFile;
+import com.marssvn.api.model.entity.SVNLockInfo;
 import com.marssvn.utils.common.StringUtils;
 import com.marssvn.utils.exception.BusinessException;
 import org.springframework.stereotype.Component;
 import org.tmatesoft.svn.core.*;
+import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
@@ -80,14 +82,14 @@ public class RepositoryBaseService extends BaseService {
      *
      * @param repositoryPath repository path
      * @param path           path
-     * @return SvnDirectory
+     * @return SVNDirectory
      */
     public RepositoryTreeDTO getRepositoryTree(String repositoryPath, String repositoryName, String path) {
         try {
-//            FSRepositoryFactory.setup();
+            FSRepositoryFactory.setup();
             SVNURL svnurl = SVNURL.parseURIEncoded(repositoryPath);
             SVNRepository repository = SVNRepositoryFactory.create(svnurl);
-            SvnDirectory directory = new SvnDirectory();
+            SVNDirectory directory = new SVNDirectory();
             directory.setName(repositoryName);
             directory.setRevision(repository.getLatestRevision());
             directory.setPath(path);
@@ -131,11 +133,11 @@ public class RepositoryBaseService extends BaseService {
      * @param svnDirectory directory
      * @throws SVNException ex
      */
-    private void _getDirectory(SVNRepository repository, SvnDirectory svnDirectory) throws SVNException {
+    private void _getDirectory(SVNRepository repository, SVNDirectory svnDirectory) throws SVNException {
         String path = svnDirectory.getPath();
         String svnRootPath = repository.getRepositoryRoot(false).toString();
-        List<SvnDirectory> directoryList = new ArrayList<>();
-        List<SvnFile> fileList = new ArrayList<>();
+        List<SVNDirectory> directoryList = new ArrayList<>();
+        List<SVNFile> fileList = new ArrayList<>();
 
         // svn directories and files
         Collection entries = repository.getDir(path, -1L, null, (Collection) null);
@@ -145,7 +147,7 @@ public class RepositoryBaseService extends BaseService {
 
             // if entry is directory
             if (svnDirEntry.getKind() == SVNNodeKind.DIR) {
-                SvnDirectory directory = new SvnDirectory();
+                SVNDirectory directory = new SVNDirectory();
 
                 // name, date, author, revision, commitMessage
                 directory.copyPropertiesFrom(svnDirEntry);
@@ -159,7 +161,7 @@ public class RepositoryBaseService extends BaseService {
 
                 directoryList.add(directory);
             } else {
-                SvnFile file = new SvnFile();
+                SVNFile file = new SVNFile();
 
                 // name, date, author, revision, size, commitMessage
                 file.copyPropertiesFrom(svnDirEntry);
@@ -173,9 +175,12 @@ public class RepositoryBaseService extends BaseService {
                 file.setFullPath(svnRootPath + "/" + realPath);
 
                 // lock owner
-                SVNLock svnLock = svnDirEntry.getLock();
+                SVNLock svnLock = repository.getLock(realPath);
                 if (svnLock != null) {
-                    file.setLockOwner(svnLock.getOwner());
+                    SVNLockInfo lockInfo = new SVNLockInfo();
+                    lockInfo.copyPropertiesFrom(svnLock);
+                    lockInfo.setCreatedAt(svnLock.getCreationDate());
+                    file.setLock(lockInfo);
                 }
                 fileList.add(file);
             }

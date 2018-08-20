@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class SvnFile extends Entity {
+public class SVNFile extends Entity {
 
     /**
      * file name
@@ -59,7 +59,7 @@ public class SvnFile extends Entity {
     /**
      * lockOwner
      */
-    private String lockOwner;
+    private SVNLockInfo lock;
 
     /**
      * commit message
