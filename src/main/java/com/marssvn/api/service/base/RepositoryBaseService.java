@@ -7,7 +7,6 @@ import com.marssvn.utils.common.StringUtils;
 import com.marssvn.utils.exception.BusinessException;
 import org.springframework.stereotype.Component;
 import org.tmatesoft.svn.core.*;
-import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
@@ -23,17 +22,12 @@ import java.util.List;
 public class RepositoryBaseService extends BaseService {
 
     /**
-     * repository init comment
-     */
-    private static final String INIT_COMMENT = "init";
-
-    /**
      * Create empty directory
      *
      * @param svnurls SVNURL
      * @param comment String
      */
-    private void _createDirectory(SVNURL[] svnurls, String comment) {
+    public void createDirectory(SVNURL[] svnurls, String comment) throws BusinessException {
 
         try {
 //            SVNRepository repository = SVNRepositoryFactory.create(svnurl);
@@ -50,8 +44,8 @@ public class RepositoryBaseService extends BaseService {
             SVNClientManager svnClientManager = SVNClientManager.newInstance(svnOptions, "marssvn", null);
             svnClientManager.getCommitClient().doMkDir(svnurls, comment);
         } catch (SVNException e) {
-            e.printStackTrace();
-            throw new BusinessException(e.getMessage());
+            logger.error(e.getMessage());
+            throw new BusinessException(message.error("repository.directory.add.failed"));
         }
     }
 
@@ -61,34 +55,15 @@ public class RepositoryBaseService extends BaseService {
      * @param repositoryName repository name
      * @return SVNURL
      */
-    public SVNURL createSvnRepository(String repositoryName, boolean autoMakeDir) {
+    public SVNURL createSvnRepository(String repositoryName) {
         try {
             // svn root path, here we use use home path
             String rootPath = System.getProperty("user.home");
 
             // svn repository folder path
-            String svnPath = rootPath + "/svn/" + repositoryName;
-            SVNURL svnurl = SVNRepositoryFactory.createLocalRepository(
-                    new File(svnPath), true, false);
+            return SVNRepositoryFactory.createLocalRepository(
+                    new File(rootPath + "/svn/" + repositoryName), true, false);
 
-            // if autoMakeDir = true, create trunk, branches, tags directory
-            if (autoMakeDir) {
-
-                String url = "file://" + svnurl.getPath();
-
-                // trunk
-                SVNURL trunk = SVNURL.parseURIEncoded(url + "/trunk");
-
-                // create branches
-                SVNURL branches = SVNURL.parseURIEncoded(url + "/branches");
-
-                // create tags
-                SVNURL tags = SVNURL.parseURIEncoded(url + "/tags");
-
-                _createDirectory(new SVNURL[]{trunk, branches, tags}, INIT_COMMENT);
-            }
-
-            return svnurl;
         } catch (SVNException e) {
             logger.error(e.getMessage());
 
@@ -102,8 +77,9 @@ public class RepositoryBaseService extends BaseService {
 
     /**
      * getRepositoryTree
+     *
      * @param repositoryPath repository path
-     * @param path path
+     * @param path           path
      * @return SvnDirectory
      */
     public RepositoryTreeDTO getRepositoryTree(String repositoryPath, String repositoryName, String path) {
@@ -111,8 +87,6 @@ public class RepositoryBaseService extends BaseService {
 //            FSRepositoryFactory.setup();
             SVNURL svnurl = SVNURL.parseURIEncoded(repositoryPath);
             SVNRepository repository = SVNRepositoryFactory.create(svnurl);
-//            repository.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager());
-
             SvnDirectory directory = new SvnDirectory();
             directory.setName(repositoryName);
             directory.setRevision(repository.getLatestRevision());
@@ -145,8 +119,8 @@ public class RepositoryBaseService extends BaseService {
             repositoryTreeDTO.setTree(directory);
             return repositoryTreeDTO;
         } catch (SVNException e) {
-            e.printStackTrace();
-            throw new BusinessException(message.error(e.getMessage()));
+            logger.error(e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
     }
 

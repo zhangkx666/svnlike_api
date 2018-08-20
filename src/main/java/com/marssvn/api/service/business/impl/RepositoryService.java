@@ -11,6 +11,8 @@ import com.marssvn.utils.exception.BusinessException;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 
 import javax.validation.Valid;
@@ -26,6 +28,11 @@ import static com.marssvn.utils.enums.ESvnProtocol.FILE;
  */
 @Service
 public class RepositoryService extends BaseService implements IRepositoryService {
+
+    /**
+     * repository init comment
+     */
+    private static final String INIT_COMMENT = "init";
 
     @Autowired
     private RepositoryBaseService repositoryBaseService;
@@ -62,6 +69,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
      * @throws BusinessException exception
      */
     @Override
+    @Transactional
     public int createRepository(RepositoryInputDTO input) throws BusinessException {
         String repositoryName = input.getName();
 
@@ -70,9 +78,31 @@ public class RepositoryService extends BaseService implements IRepositoryService
             throw new BusinessException(message.error("repository.name.duplicate.create", repositoryName));
 
         // 2. create repository
-        SVNURL svnurl = repositoryBaseService.createSvnRepository(repositoryName, input.getAutoMakeDir());
+        SVNURL svnurl = repositoryBaseService.createSvnRepository(repositoryName);
 
-        // 3. write repository db data
+        // 3. create trunk, branches, tags
+        // if autoMakeDir = true, create trunk, branches, tags directory
+        if (input.getAutoMakeDir()) {
+
+            try {
+                String url = "file://" + svnurl.getPath();
+
+                // trunk
+                SVNURL trunk = SVNURL.parseURIEncoded(url + "/trunk");
+
+                // create branches
+                SVNURL branches = SVNURL.parseURIEncoded(url + "/branches");
+
+                // create tags
+                SVNURL tags = SVNURL.parseURIEncoded(url + "/tags");
+
+                repositoryBaseService.createDirectory(new SVNURL[]{trunk, branches, tags}, INIT_COMMENT);
+            } catch (SVNException | BusinessException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        // 4. write repository db data
         Repository repository = new Repository();
         repository.setUserId(uvo.getId());
         repository.setName(repositoryName);
@@ -89,9 +119,9 @@ public class RepositoryService extends BaseService implements IRepositoryService
             try {
                 FileUtils.deleteDirectory(new File(repository.getPath()));
             } catch (IOException ex) {
-                ex.printStackTrace();
+                logger.error(ex.getMessage());
             }
-            e.printStackTrace();
+            logger.error(e.getMessage());
             throw new BusinessException(message.error("repository.create.failed"));
         }
 
@@ -100,10 +130,12 @@ public class RepositoryService extends BaseService implements IRepositoryService
 
     /**
      * Update repository
-     * @param id repositoryId
+     *
+     * @param id    repositoryId
      * @param input parameters
      */
     @Override
+    @Transactional
     public void updateRepositoryById(int id, @Valid RepositoryInputDTO input) {
         String newRepositoryName = input.getName();
 
@@ -112,18 +144,19 @@ public class RepositoryService extends BaseService implements IRepositoryService
         if (repository == null)
             throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
 
-        // new repository name
-        if (_repositoryNameExists(newRepositoryName))
-            throw new BusinessException(message.error("repository.name.duplicate.update", newRepositoryName));
-
         // if new repository name not equals old name
         if (StringUtils.isNotBlank(newRepositoryName) && !newRepositoryName.equals(repository.getName())) {
+
+            // new repository name
+            if (_repositoryNameExists(newRepositoryName))
+                throw new BusinessException(message.error("repository.name.duplicate.update", newRepositoryName));
+
             File oldFolder = new File(repository.getPath());
             File newFolder = new File(oldFolder.getParentFile().getPath() + "/" + newRepositoryName);
             try {
                 FileUtils.moveDirectory(oldFolder, newFolder);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
 
             // reset name and path
@@ -139,9 +172,11 @@ public class RepositoryService extends BaseService implements IRepositoryService
 
     /**
      * Delete repository
+     *
      * @param id repositoryId
      */
     @Override
+    @Transactional
     public void deleteRepositoryById(int id) {
 
         // query repository
@@ -158,13 +193,15 @@ public class RepositoryService extends BaseService implements IRepositoryService
         try {
             FileUtils.deleteDirectory(new File(repository.getPath()));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
+            throw new BusinessException(message.error("repository.delete.failed"));
         }
     }
 
     /**
      * get repository tree
-     * @param id repository id
+     *
+     * @param id   repository id
      * @param path repository path
      * @return repository tree
      */
@@ -183,6 +220,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
 
     /**
      * Verify if the repository name exists
+     *
      * @param repositoryName repository name
      * @return boolean
      */

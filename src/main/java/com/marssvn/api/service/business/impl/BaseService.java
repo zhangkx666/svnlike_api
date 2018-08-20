@@ -23,7 +23,7 @@ public class BaseService {
     /**
      * Logger
      */
-    Logger logger = LoggerFactory.getLogger("BusinessService");
+    static Logger logger = LoggerFactory.getLogger("BusinessService");
 
     /**
      * user info
