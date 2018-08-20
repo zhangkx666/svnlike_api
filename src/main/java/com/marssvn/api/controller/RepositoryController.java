@@ -33,7 +33,7 @@ public class RepositoryController extends BaseController {
     @RequestMapping(method = RequestMethod.GET)
     public JsonResult index(RepositoryConditionDTO input) {
         List<Repository> repositoryList = repositoryService.getRepositoryList(input);
-        List<ResponseDTO> responseDTOList = new ArrayList<>();
+        List<RepositoryDTO> responseDTOList = new ArrayList<>();
         repositoryList.forEach(item -> responseDTOList.add(item.convertTo(RepositoryDTO.class)));
         return new JsonResult(responseDTOList);
     }
