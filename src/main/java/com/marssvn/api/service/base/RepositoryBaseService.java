@@ -76,7 +76,7 @@ public class RepositoryBaseService extends BaseService {
     }
 
     /**
-     * getRepositoryTree
+     * get repository tree
      *
      * @param repositoryPath repository path
      * @param path           path
@@ -124,6 +124,13 @@ public class RepositoryBaseService extends BaseService {
         }
     }
 
+    /**
+     * get directory
+     *
+     * @param repository repository
+     * @param svnDirectory directory
+     * @throws SVNException ex
+     */
     private void _getDirectory(SVNRepository repository, SvnDirectory svnDirectory) throws SVNException {
         String path = svnDirectory.getPath();
         String svnRootPath = repository.getRepositoryRoot(false).toString();
