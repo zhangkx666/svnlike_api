@@ -70,7 +70,7 @@ public class RepositoryController extends BaseController {
      * @return JsonResult
      */
     @RequestMapping(method = RequestMethod.POST)
-    public JsonResult create(@Valid @RequestBody RepositoryInputDTO input) throws BusinessException {
+    public JsonResult create(@Valid @RequestBody RepositoryInputDTO input) {
 
         // create repository
         int repositoryId = repositoryService.createRepository(input);
@@ -97,7 +97,7 @@ public class RepositoryController extends BaseController {
     @Transactional
     @RequestMapping(method = RequestMethod.PATCH, value = "/{id}")
     public JsonResult update(@PathVariable("id") int id,
-                             @Valid @RequestBody RepositoryInputDTO input) throws BusinessException {
+                             @Valid @RequestBody RepositoryInputDTO input) {
         repositoryService.updateRepositoryById(id, input);
         return new JsonResult(message.success("repository.update.success"));
     }
@@ -109,7 +109,7 @@ public class RepositoryController extends BaseController {
      * @throws BusinessException ex
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    public JsonResult delete(@PathVariable("id") int id) throws BusinessException {
+    public JsonResult delete(@PathVariable("id") int id) {
         repositoryService.deleteRepositoryById(id);
         return new JsonResult(message.success("repository.delete.success"));
     }

@@ -29,7 +29,7 @@ public class RepositoryBaseService extends BaseService {
      * @param svnurls SVNURL
      * @param comment String
      */
-    public void createDirectory(SVNURL[] svnurls, String comment) throws BusinessException {
+    public void createDirectory(SVNURL[] svnurls, String comment) {
 
         try {
 //            SVNRepository repository = SVNRepositoryFactory.create(svnurl);
@@ -81,6 +81,7 @@ public class RepositoryBaseService extends BaseService {
      * get repository tree
      *
      * @param repositoryPath repository path
+     * @param repositoryName repository name
      * @param path           path
      * @return SVNDirectory
      */

@@ -35,7 +35,7 @@ public interface IRepositoryService {
      * @return repository id
      * @throws BusinessException exception
      */
-    int createRepository(RepositoryInputDTO repositoryName) throws BusinessException;
+    int createRepository(RepositoryInputDTO repositoryName);
 
     /**
      * Update repository

@@ -70,7 +70,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
      */
     @Override
     @Transactional
-    public int createRepository(RepositoryInputDTO input) throws BusinessException {
+    public int createRepository(RepositoryInputDTO input) {
         String repositoryName = input.getName();
 
         // 1. repository exists check
