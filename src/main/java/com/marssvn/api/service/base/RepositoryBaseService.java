@@ -32,18 +32,10 @@ public class RepositoryBaseService extends BaseService {
     public void createDirectory(SVNURL[] svnurls, String comment) {
 
         try {
-//            SVNRepository repository = SVNRepositoryFactory.create(svnurl);
-//            repository.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager());
-//            ISVNEditor editor = repository.getCommitEditor(comment, null);
-//            editor.openRoot(-1L);
-//            editor.addDir(directoryName, null, -1L);
-//            editor.closeDir();
-//            editor.closeDir();
-//            editor.closeEdit();
-
-//            FSRepositoryFactory.setup();
+            FSRepositoryFactory.setup();
             DefaultSVNOptions svnOptions = SVNWCUtil.createDefaultOptions(true);
-            SVNClientManager svnClientManager = SVNClientManager.newInstance(svnOptions, "system", null);
+            SVNClientManager svnClientManager =
+                    SVNClientManager.newInstance(svnOptions, "marssvn", null);
             svnClientManager.getCommitClient().doMkDir(svnurls, comment);
         } catch (SVNException e) {
             logger.error(e.getMessage());
@@ -72,7 +64,6 @@ public class RepositoryBaseService extends BaseService {
             // svn: E204899: '/home/svn/#{repositoryName}' already exists; use 'force' to overwrite existing svnFiles
             if (204899 == e.getErrorMessage().getErrorCode().getCode())
                 throw new BusinessException(message.error("repository.name.duplicate.create", repositoryName));
-
             throw new BusinessException(message.error("repository.create.failed"));
         }
     }
@@ -131,6 +122,8 @@ public class RepositoryBaseService extends BaseService {
             return repositoryTreeDTO;
         } catch (SVNException e) {
             logger.error(e.getMessage());
+
+            // svn: E160013: Attempted to open non-existent child node '#{path}'
             if (160013 == e.getErrorMessage().getErrorCode().getCode())
                 throw new BusinessException(message.error("repository.path.not_exists", path));
             throw new BusinessException(e.getMessage());
