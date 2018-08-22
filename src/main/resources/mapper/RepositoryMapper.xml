@@ -26,7 +26,7 @@
         DELETE FROM repository WHERE id = #{id}
     </delete>
 
-    <select id="selectOne" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+    <sql id="selectRepositoryJoinUserAndProject">
         SELECT
             rep.`id`,
             rep.`project_id`,
@@ -43,30 +43,19 @@
         FROM repository rep
         INNER JOIN `user` ON rep.`user_id` = `user`.`id`
         LEFT JOIN project ON rep.`project_id` = project.`id`
+    </sql>
+
+    <select id="selectOne" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+        <include refid="selectRepositoryJoinUserAndProject"/>
         WHERE rep.id = #{id};
     </select>
 
     <select id="selectMany" parameterType="java.util.HashMap" resultMap="BaseResultMap">
-        SELECT
-            rep.`id`,
-            rep.`project_id`,
-            rep.`user_id`,
-            rep.`title`,
-            rep.`name`,
-            rep.`path`,
-            rep.`description`,
-            rep.`protocol`,
-            rep.`created_at`,
-            rep.`updated_at`,
-            project.`name` AS project_name,
-            `user`.`name` AS user_name
-        FROM repository rep
-        INNER JOIN `user` ON rep.`user_id` = `user`.`id`
-        LEFT JOIN project ON rep.`project_id` = project.`id`
+        <include refid="selectRepositoryJoinUserAndProject"/>
         <where>
             <if test="keyword != null and keyword != ''">
                 <bind name="keywordLike" value="'%' + _parameter.keyword + '%'"/>
-                `name` LIKE #{keywordLike}
+                `title` LIKE #{keywordLike} OR `name` LIKE #{keywordLike} OR `description` LIKE #{keywordLike}
             </if>
         </where>
         ORDER BY `id` DESC
