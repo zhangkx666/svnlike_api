@@ -1,6 +1,7 @@
-package com.marssvn.api.model.entity;
+package com.marssvn.api.model.po;
 
 import com.marssvn.utils.enums.ESvnProtocol;
+import com.marssvn.utils.model.BaseBean;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +9,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class Repository extends Entity {
+public class RepositoryPO extends BaseBean {
 
     /**
      * ID
@@ -21,9 +22,19 @@ public class Repository extends Entity {
     private Integer projectId;
 
     /**
+     * project name
+     */
+    private String projectName;
+
+    /**
      * user id
      */
     private Integer userId;
+
+    /**
+     * user name
+     */
+    private String userName;
 
     /**
      * repository title

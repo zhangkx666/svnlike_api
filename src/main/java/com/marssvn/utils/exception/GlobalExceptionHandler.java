@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.sql.SQLSyntaxErrorException;
 import java.util.HashMap;
 
 @RestControllerAdvice
@@ -51,6 +52,23 @@ public class GlobalExceptionHandler {
         message.put("field", fieldError.getField());
         message.put("content", fieldError.getDefaultMessage());
         jsonResult.setMessage(message);
+        e.printStackTrace();
+        return jsonResult;
+    }
+
+    /**
+     * handle SQLSyntaxErrorException
+     * @param e SQLSyntaxErrorException
+     * @return JsonResult
+     */
+    @ResponseBody
+    @ExceptionHandler(SQLSyntaxErrorException.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    JsonResult sqlSyntaxErrorExceptionHandler(SQLSyntaxErrorException e) {
+        JsonResult jsonResult = new JsonResult();
+        jsonResult.setStatus(0);
+        jsonResult.setErrorCode("DB_ERROR");
+        jsonResult.setMessage(Message.MESSAGE_TYPE_ERROR, e.getMessage());
         e.printStackTrace();
         return jsonResult;
     }

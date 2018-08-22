@@ -43,7 +43,7 @@ public class RepositoryBaseService extends BaseService {
 
 //            FSRepositoryFactory.setup();
             DefaultSVNOptions svnOptions = SVNWCUtil.createDefaultOptions(true);
-            SVNClientManager svnClientManager = SVNClientManager.newInstance(svnOptions, "marssvn", null);
+            SVNClientManager svnClientManager = SVNClientManager.newInstance(svnOptions, "system", null);
             svnClientManager.getCommitClient().doMkDir(svnurls, comment);
         } catch (SVNException e) {
             logger.error(e.getMessage());
@@ -133,7 +133,6 @@ public class RepositoryBaseService extends BaseService {
             logger.error(e.getMessage());
             if (160013 == e.getErrorMessage().getErrorCode().getCode())
                 throw new BusinessException(message.error("repository.path.not_exists", path));
-
             throw new BusinessException(e.getMessage());
         }
     }

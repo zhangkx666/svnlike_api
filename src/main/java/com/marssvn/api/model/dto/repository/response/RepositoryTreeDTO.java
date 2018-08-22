@@ -19,7 +19,6 @@ public class RepositoryTreeDTO extends ResponseDTO {
      */
     private String root;
 
-
     /**
      * repository protocol
      */

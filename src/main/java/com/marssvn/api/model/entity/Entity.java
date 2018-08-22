@@ -4,5 +4,4 @@ import com.marssvn.utils.model.BaseBean;
 
 public class Entity extends BaseBean{
 
-
 }

@@ -74,7 +74,7 @@ public class CommonDAOImpl extends SqlSessionDaoSupport implements ICommonDAO {
                 return (E) clazz.cast(obj);
             }
         } catch (ClassCastException e) {
-            throw new BusinessException("Data type not right!");
+            throw new BusinessException("Data type not right");
         }
         return null;
     }

@@ -3,7 +3,7 @@ package com.marssvn.api.service.business;
 import com.marssvn.api.model.dto.repository.request.RepositoryConditionDTO;
 import com.marssvn.api.model.dto.repository.request.RepositoryInputDTO;
 import com.marssvn.api.model.dto.repository.response.RepositoryTreeDTO;
-import com.marssvn.api.model.entity.Repository;
+import com.marssvn.api.model.po.RepositoryPO;
 import com.marssvn.utils.exception.BusinessException;
 
 import javax.validation.Valid;
@@ -19,14 +19,14 @@ public interface IRepositoryService {
      * @param input parameters
      * @return List
      */
-    List<Repository> getRepositoryList(RepositoryConditionDTO input);
+    List<RepositoryPO> getRepositoryList(RepositoryConditionDTO input);
 
     /**
      * Get repository by id
      * @param id repositoryId
      * @return Repository
      */
-    Repository getRepositoryById(int id);
+    RepositoryPO getRepositoryById(int id);
 
     /**
      * Create repository

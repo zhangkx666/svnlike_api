@@ -1,12 +1,11 @@
 package com.marssvn.api.controller;
 
 import com.marssvn.api.model.dto.JsonResult;
-import com.marssvn.api.model.dto.ResponseDTO;
 import com.marssvn.api.model.dto.repository.request.RepositoryConditionDTO;
 import com.marssvn.api.model.dto.repository.request.RepositoryInputDTO;
 import com.marssvn.api.model.dto.repository.request.RepositoryTreeConditionDTO;
 import com.marssvn.api.model.dto.repository.response.RepositoryDTO;
-import com.marssvn.api.model.entity.Repository;
+import com.marssvn.api.model.po.RepositoryPO;
 import com.marssvn.api.service.business.IRepositoryService;
 import com.marssvn.utils.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +31,10 @@ public class RepositoryController extends BaseController {
      */
     @RequestMapping(method = RequestMethod.GET)
     public JsonResult index(RepositoryConditionDTO input) {
-        List<Repository> repositoryList = repositoryService.getRepositoryList(input);
-        List<RepositoryDTO> responseDTOList = new ArrayList<>();
-        repositoryList.forEach(item -> responseDTOList.add(item.convertTo(RepositoryDTO.class)));
-        return new JsonResult(responseDTOList);
+        List<RepositoryPO> repositoryPOList = repositoryService.getRepositoryList(input);
+        List<RepositoryDTO> repositoryDTOList = new ArrayList<>();
+        repositoryPOList.forEach(item -> repositoryDTOList.add(item.convertTo(RepositoryDTO.class)));
+        return new JsonResult(repositoryDTOList);
     }
 
     /**
@@ -46,11 +45,11 @@ public class RepositoryController extends BaseController {
      */
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     public JsonResult show(@PathVariable(value = "id") int id) {
-        Repository repository = repositoryService.getRepositoryById(id);
-        if (repository == null)
+        RepositoryPO repositoryPO = repositoryService.getRepositoryById(id);
+        if (repositoryPO == null)
             throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
 
-        return new JsonResult(repository.convertTo(RepositoryDTO.class));
+        return new JsonResult(repositoryPO.convertTo(RepositoryDTO.class));
     }
 
     /**

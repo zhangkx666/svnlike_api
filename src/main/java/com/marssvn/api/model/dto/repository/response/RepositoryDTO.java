@@ -25,9 +25,24 @@ public class RepositoryDTO extends ResponseDTO {
     private Integer projectId;
 
     /**
+     * project name
+     */
+    private String projectName;
+
+    /**
      * user id
      */
     private Integer userId;
+
+    /**
+     * user name
+     */
+    private String userName;
+
+    /**
+     * repository title
+     */
+    private String title;
 
     /**
      * repository name
@@ -70,6 +85,7 @@ public class RepositoryDTO extends ResponseDTO {
 
     /**
      * get protocol lower
+     *
      * @return protocol lower
      */
     public String getProtocolLower() {

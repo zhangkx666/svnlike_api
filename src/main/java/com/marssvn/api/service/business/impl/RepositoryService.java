@@ -4,6 +4,7 @@ import com.marssvn.api.model.dto.repository.request.RepositoryConditionDTO;
 import com.marssvn.api.model.dto.repository.request.RepositoryInputDTO;
 import com.marssvn.api.model.dto.repository.response.RepositoryTreeDTO;
 import com.marssvn.api.model.entity.Repository;
+import com.marssvn.api.model.po.RepositoryPO;
 import com.marssvn.api.service.base.RepositoryBaseService;
 import com.marssvn.api.service.business.IRepositoryService;
 import com.marssvn.utils.common.StringUtils;
@@ -38,7 +39,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
     private RepositoryBaseService repositoryBaseService;
 
     @Override
-    public List<Repository> getRepositoryList(RepositoryConditionDTO input) {
+    public List<RepositoryPO> getRepositoryList(RepositoryConditionDTO input) {
 
         // Query parameters
         HashMap<String, Object> params = new HashMap<>();
@@ -51,14 +52,14 @@ public class RepositoryService extends BaseService implements IRepositoryService
     }
 
     @Override
-    public Repository getRepositoryById(int id) {
+    public RepositoryPO getRepositoryById(int id) {
 
         // Query parameters
         HashMap<String, Object> params = new HashMap<>();
         params.put("id", id);
 
         // Query repository list
-        return commonDAO.queryForObject("Repository.selectOne", params, Repository.class);
+        return commonDAO.queryForObject("Repository.selectOne", params, RepositoryPO.class);
     }
 
     /**
@@ -137,9 +138,12 @@ public class RepositoryService extends BaseService implements IRepositoryService
         String newRepositoryName = input.getName();
 
         // query repository
-        Repository repository = this.getRepositoryById(id);
-        if (repository == null)
+        RepositoryPO repositoryPO = this.getRepositoryById(id);
+        if (repositoryPO == null)
             throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
+
+        // Repository
+        Repository repository = repositoryPO.convertTo(Repository.class);
 
         // if new repository name not equals old name
         if (StringUtils.isNotBlank(newRepositoryName) && !newRepositoryName.equals(repository.getName())) {
@@ -177,8 +181,8 @@ public class RepositoryService extends BaseService implements IRepositoryService
     public void deleteRepositoryById(int id) {
 
         // query repository
-        Repository repository = this.getRepositoryById(id);
-        if (repository == null)
+        RepositoryPO repositoryPO = this.getRepositoryById(id);
+        if (repositoryPO == null)
             throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
 
         // delete db data
@@ -188,7 +192,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
 
         // delete svn folder
         try {
-            FileUtils.deleteDirectory(new File(repository.getPath()));
+            FileUtils.deleteDirectory(new File(repositoryPO.getPath()));
         } catch (IOException e) {
             logger.error(e.getMessage());
             throw new BusinessException(message.error("repository.delete.failed"));
@@ -206,13 +210,13 @@ public class RepositoryService extends BaseService implements IRepositoryService
     public RepositoryTreeDTO getRepositoryTreeById(int id, String path) {
 
         // query repository
-        Repository repository = this.getRepositoryById(id);
-        if (repository == null)
+        RepositoryPO repositoryPO = this.getRepositoryById(id);
+        if (repositoryPO == null)
             throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
 
         // get repository tree
-        String repositoryPath = repository.getProtocol().getPrefix() + repository.getPath();
-        return repositoryBaseService.getRepositoryTree(repositoryPath, repository.getName(), path);
+        String repositoryPath = repositoryPO.getProtocol().getPrefix() + repositoryPO.getPath();
+        return repositoryBaseService.getRepositoryTree(repositoryPath, repositoryPO.getName(), path);
     }
 
     /**

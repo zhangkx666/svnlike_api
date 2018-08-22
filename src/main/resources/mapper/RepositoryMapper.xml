@@ -1,63 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Repository">
-    <resultMap id="BaseResultMap" type="com.marssvn.api.model.entity.Repository">
+    <resultMap id="BaseResultMap" type="com.marssvn.api.model.po.RepositoryPO">
         <id property="id" column="id"/>
         <result property="projectId" column="project_id"/>
+        <result property="projectName" column="project_name"/>
         <result property="userId" column="user_id"/>
-        <result property="name" column="name"/>
-        <result property="path" column="path"/>
-        <result property="protocol" column="protocol"/>
+        <result property="userName" column="user_name"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
-    <insert id="add" parameterType="com.marssvn.api.model.entity.Repository" keyProperty="id" useGeneratedKeys="true">
-        INSERT INTO svn_repository (`project_id`, `user_id`, `name`, `path`, `description`, `protocol`)
-            VALUE (#{projectId}, #{userId}, #{name}, #{path}, #{description}, #{protocol});
+    <insert id="add" keyProperty="id" useGeneratedKeys="true" parameterType="com.marssvn.api.model.entity.Repository">
+        INSERT INTO repository (`project_id`, `user_id`, `title`, `name`, `path`, `description`, `protocol`)
+            VALUE (#{projectId}, #{userId}, #{title}, #{name}, #{path}, #{description}, #{protocol});
     </insert>
 
     <update id="updateById" parameterType="com.marssvn.api.model.entity.Repository">
-        UPDATE svn_repository
-        SET `name` = #{name}, `path` = #{path}, `description` = #{description}
+        UPDATE repository
+        SET `title` = #{title}, `name` = #{name}, `path` = #{path}, `description` = #{description}
         WHERE `id` = #{id};
     </update>
 
     <delete id="deleteById" parameterType="java.util.HashMap">
-        DELETE FROM svn_repository WHERE id = #{id}
+        DELETE FROM repository WHERE id = #{id}
     </delete>
 
     <select id="selectOne" parameterType="java.util.HashMap" resultMap="BaseResultMap">
         SELECT
-            `id`,
-            `project_id`,
-            `user_id`,
-            `name`,
-            `path`,
-            `description`,
-            `protocol`,
-            `created_at`,
-            `updated_at`
-        FROM svn_repository
-        WHERE id = #{id};
+            rep.`id`,
+            rep.`project_id`,
+            rep.`user_id`,
+            rep.`title`,
+            rep.`name`,
+            rep.`path`,
+            rep.`description`,
+            rep.`protocol`,
+            rep.`created_at`,
+            rep.`updated_at`,
+            project.`name` AS project_name,
+            `user`.`name`  AS user_name
+        FROM repository rep
+        INNER JOIN `user` ON rep.`user_id` = `user`.`id`
+        LEFT JOIN project ON rep.`project_id` = project.`id`
+        WHERE rep.id = #{id};
     </select>
 
     <select id="selectMany" parameterType="java.util.HashMap" resultMap="BaseResultMap">
         SELECT
-            `id`,
-            `project_id`,
-            `user_id`,
-            `name`,
-            `path`,
-            `description`,
-            `protocol`,
-            `created_at`,
-            `updated_at`
-        FROM svn_repository
+            rep.`id`,
+            rep.`project_id`,
+            rep.`user_id`,
+            rep.`title`,
+            rep.`name`,
+            rep.`path`,
+            rep.`description`,
+            rep.`protocol`,
+            rep.`created_at`,
+            rep.`updated_at`,
+            project.`name` AS project_name,
+            `user`.`name` AS user_name
+        FROM repository rep
+        INNER JOIN `user` ON rep.`user_id` = `user`.`id`
+        LEFT JOIN project ON rep.`project_id` = project.`id`
         <where>
             <if test="keyword != null and keyword != ''">
-                <bind name="keywordLike" value="'%' + _parameter.keyword + '%'" />
-                `name` like #{keywordLike}
+                <bind name="keywordLike" value="'%' + _parameter.keyword + '%'"/>
+                `name` LIKE #{keywordLike}
             </if>
         </where>
         ORDER BY `id` DESC
@@ -66,7 +75,7 @@
 
     <select id="selectCountByName" parameterType="java.util.HashMap" resultType="java.lang.Integer">
         SELECT count(1) AS `count`
-        FROM svn_repository
+        FROM repository
         WHERE `name` = #{name};
     </select>
 </mapper>
