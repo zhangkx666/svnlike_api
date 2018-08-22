@@ -6,7 +6,7 @@ import com.marssvn.api.model.entity.SVNFile;
 import com.marssvn.api.model.entity.SVNLockInfo;
 import com.marssvn.utils.common.StringUtils;
 import com.marssvn.utils.exception.BusinessException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.tmatesoft.svn.core.*;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Component
+@Service
 public class RepositoryBaseService extends BaseService {
 
     /**
