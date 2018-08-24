@@ -59,14 +59,14 @@ public class ApiApplication implements WebMvcConfigurer {
         return jacksonObjectMapperBuilder -> jacksonObjectMapperBuilder.timeZone(TimeZone.getDefault());
     }
 
-    /**
-     * RequestInterceptor
-     */
-    @Resource
-    private RequestInterceptor requestInterceptor;
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(requestInterceptor).addPathPatterns("/**");
-    }
+//    /**
+//     * RequestInterceptor
+//     */
+//    @Resource
+//    private RequestInterceptor requestInterceptor;
+//
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        registry.addInterceptor(requestInterceptor).addPathPatterns("/**");
+//    }
 }

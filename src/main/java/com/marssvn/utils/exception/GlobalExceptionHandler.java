@@ -2,6 +2,8 @@ package com.marssvn.utils.exception;
 
 import com.marssvn.api.model.dto.JsonResult;
 import com.marssvn.utils.message.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,6 +17,8 @@ import java.util.HashMap;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * handle business exception
@@ -30,7 +34,8 @@ public class GlobalExceptionHandler {
         jsonResult.setStatus(0);
         jsonResult.setErrorCode("BUSINESS_ERROR");
         jsonResult.setMessage(Message.MESSAGE_TYPE_ERROR, e.getMessage());
-        e.printStackTrace();
+        logger.error("BUSINESS_ERROR: " + e.getMessage());
+//        e.printStackTrace();
         return jsonResult;
     }
 
@@ -52,7 +57,8 @@ public class GlobalExceptionHandler {
         message.put("field", fieldError.getField());
         message.put("content", fieldError.getDefaultMessage());
         jsonResult.setMessage(message);
-        e.printStackTrace();
+//        e.printStackTrace();
+        logger.error("VALIDATION_ERROR: " + fieldError.getDefaultMessage());
         return jsonResult;
     }
 

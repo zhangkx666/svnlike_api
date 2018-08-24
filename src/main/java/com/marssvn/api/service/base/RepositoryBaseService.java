@@ -148,6 +148,7 @@ public class RepositoryBaseService extends BaseService {
         for (Object item : entries) {
             SVNDirEntry svnDirEntry = (SVNDirEntry) item;
             String realPath = StringUtils.isBlank(path) ? svnDirEntry.getName() : path + "/" + svnDirEntry.getName();
+            logger.info(realPath + " (rev: " + svnDirEntry.getRevision() + ")");
 
             // if entry is directory
             if (svnDirEntry.getKind() == SVNNodeKind.DIR) {

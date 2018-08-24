@@ -16,5 +16,5 @@ public class BaseService {
     /**
      * Logger
      */
-    static Logger logger = LoggerFactory.getLogger("BaseService");
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 }
