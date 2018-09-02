@@ -1,6 +1,6 @@
 package com.marssvn.api.model.entity;
 
-import com.marssvn.utils.enums.ESvnProtocol;
+import com.marssvn.utils.enums.ESVNProtocol;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -48,7 +48,7 @@ public class Repository extends Entity {
     /**
      * protocol
      */
-    private ESvnProtocol protocol;
+    private ESVNProtocol protocol;
 
     /**
      * created at

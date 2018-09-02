@@ -1,6 +1,6 @@
 package com.marssvn.api.model.po;
 
-import com.marssvn.utils.enums.ESvnProtocol;
+import com.marssvn.utils.enums.ESVNProtocol;
 import com.marssvn.utils.model.BaseBean;
 import lombok.Getter;
 import lombok.Setter;
@@ -59,7 +59,7 @@ public class RepositoryPO extends BaseBean {
     /**
      * protocol
      */
-    private ESvnProtocol protocol;
+    private ESVNProtocol protocol;
 
     /**
      * created at

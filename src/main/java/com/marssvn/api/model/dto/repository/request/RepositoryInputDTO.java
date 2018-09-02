@@ -23,6 +23,12 @@ public class RepositoryInputDTO extends RequestDTO {
     private String name;
 
     /**
+     * Repository title
+     */
+    @NotBlank(message = "{repository.title.blank}")
+    private String title;
+
+    /**
      * Repository description
      */
     private String description;

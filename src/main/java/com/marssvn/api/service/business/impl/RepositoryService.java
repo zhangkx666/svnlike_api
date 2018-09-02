@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.marssvn.utils.enums.ESvnProtocol.FILE;
+import static com.marssvn.utils.enums.ESVNProtocol.FILE;
 
 /**
  * Repository Service
@@ -104,6 +104,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
         Repository repository = new Repository();
         repository.setUserId(uvo.getId());
         repository.setName(repositoryName);
+        repository.setTitle(input.getTitle());
         repository.setProjectId(input.getProjectId());
         repository.setDescription(input.getDescription());
         repository.setPath(svnurl.getPath());

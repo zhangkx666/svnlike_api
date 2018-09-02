@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.marssvn.api.model.dto.ResponseDTO;
-import com.marssvn.utils.enums.ESvnProtocol;
+import com.marssvn.utils.enums.ESVNProtocol;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -63,7 +63,7 @@ public class RepositoryDTO extends ResponseDTO {
      * protocol
      */
     @JsonIgnore
-    private ESvnProtocol protocol;
+    private ESVNProtocol protocol;
 
     /**
      * protocol lower

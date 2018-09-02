@@ -3,7 +3,7 @@ package com.marssvn.utils.enums;
 /**
  * svn protocol
  */
-public enum ESvnProtocol {
+public enum ESVNProtocol {
     /**
      * file:///
      */
@@ -26,7 +26,7 @@ public enum ESvnProtocol {
 
     private String value;
 
-    ESvnProtocol(String value) {
+    ESVNProtocol(String value) {
         this.value = value;
     }
 
