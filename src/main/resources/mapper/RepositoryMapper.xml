@@ -53,7 +53,7 @@
     <select id="selectMany" parameterType="java.util.HashMap" resultMap="BaseResultMap">
         <include refid="selectRepositoryJoinUserAndProject"/>
         <where>
-            <if test="keyword != null and keyword != ''">
+            <if test="keyword != ''">
                 <bind name="keywordLike" value="'%' + _parameter.keyword + '%'"/>
                 `title` LIKE #{keywordLike} OR `name` LIKE #{keywordLike} OR `description` LIKE #{keywordLike}
             </if>
