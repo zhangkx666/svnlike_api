@@ -30,7 +30,7 @@ public class RepositoryConditionDTO extends RequestDTO {
      * @return trimmed repository name
      */
     public String getKeyword() {
-        return keyword == null ? null : keyword.trim();
+        return keyword == null ? "" : keyword.trim();
     }
 
     /**

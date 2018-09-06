@@ -26,16 +26,6 @@ public class BusinessException extends RuntimeException{
         super(message);
     }
 
-//    /**
-//     * New BusinessException by errorCode and message
-//     * @param errorCode error code
-//     * @param message message
-//     */
-//    public BusinessException(String errorCode, String message) {
-//        super(message);
-//        this.errorCode = errorCode;
-//    }
-
     /**
      * New BusinessException by IMessage.class
      *
