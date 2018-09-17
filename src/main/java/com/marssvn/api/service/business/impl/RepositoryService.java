@@ -11,6 +11,7 @@ import com.marssvn.utils.common.StringUtils;
 import com.marssvn.utils.exception.BusinessException;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tmatesoft.svn.core.SVNException;
@@ -38,7 +39,13 @@ public class RepositoryService extends BaseService implements IRepositoryService
     @Autowired
     private RepositoryBaseService repositoryBaseService;
 
+    /**
+     * Get repository list
+     * @param input parameters
+     * @return List
+     */
     @Override
+    @Cacheable("repository.many")
     public List<RepositoryPO> getRepositoryList(RepositoryConditionDTO input) {
 
         // Query parameters
@@ -51,7 +58,13 @@ public class RepositoryService extends BaseService implements IRepositoryService
         return commonDAO.queryForList("Repository.selectMany", params);
     }
 
+    /**
+     * Get repository by id
+     * @param id repositoryId
+     * @return Repository
+     */
     @Override
+    @Cacheable("repository.one")
     public RepositoryPO getRepositoryById(int id) {
 
         // Query parameters
@@ -208,6 +221,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
      * @return repository tree
      */
     @Override
+    @Cacheable(value = "repository.tree", key = "#id + #path")
     public RepositoryTreeDTO getRepositoryTreeById(int id, String path) {
 
         // query repository

@@ -48,4 +48,9 @@ public class RepositoryConditionDTO extends RequestDTO {
     public int getPageSize() {
         return pageSize == 0 ? 15 : pageSize;
     }
+
+    @Override
+    public String toString() {
+        return page + keyword;
+    }
 }

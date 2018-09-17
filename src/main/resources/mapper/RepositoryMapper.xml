@@ -55,10 +55,10 @@
         <where>
             <if test="keyword != ''">
                 <bind name="keywordLike" value="'%' + _parameter.keyword + '%'"/>
-                `title` LIKE #{keywordLike} OR `name` LIKE #{keywordLike} OR `description` LIKE #{keywordLike}
+                rep.`title` LIKE #{keywordLike} OR rep.`name` LIKE #{keywordLike} OR rep.`description` LIKE #{keywordLike}
             </if>
         </where>
-        ORDER BY `id` DESC
+        ORDER BY rep.`id` DESC
         LIMIT #{offset}, #{pageSize}
     </select>
 

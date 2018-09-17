@@ -2,7 +2,9 @@ package com.marssvn.utils.model;
 
 import org.springframework.beans.BeanUtils;
 
-public class BaseBean {
+import java.io.Serializable;
+
+public class BaseBean implements Serializable {
 
     /**
      * convert to object of dest class

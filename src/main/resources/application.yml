@@ -15,10 +15,15 @@ spring:
           enabled: true
           statement-log-enabled: false
           statement-executable-sql-log-enable: true
-
   messages:
     basename: i18n/messages, i18n/validations
     encoding: UTF-8
+  cache:
+    type: redis
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: 123456
 
 mybatis:
   mapper-locations: mapper/*Mapper.xml
