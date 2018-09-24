@@ -46,7 +46,7 @@ public class CacheRemoveAspect {
     }
 
     /**
-     * parseKey of SPEL
+     * parseKey from SPEL
      */
     private String parseKey(String key, Method method, Object [] args){
         LocalVariableTableParameterNameDiscoverer u =
