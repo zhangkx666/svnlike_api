@@ -1,4 +1,4 @@
-package com.marssvn.api.service.base;
+package com.marssvn.api.service.base.impl;
 
 import com.marssvn.utils.message.Message;
 import org.slf4j.Logger;

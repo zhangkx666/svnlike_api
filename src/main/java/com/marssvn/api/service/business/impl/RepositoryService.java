@@ -5,7 +5,7 @@ import com.marssvn.api.model.dto.repository.request.RepositoryInputDTO;
 import com.marssvn.api.model.dto.repository.response.RepositoryTreeDTO;
 import com.marssvn.api.model.entity.Repository;
 import com.marssvn.api.model.po.RepositoryPO;
-import com.marssvn.api.service.base.RepositoryBaseService;
+import com.marssvn.api.service.base.IRepositoryBaseService;
 import com.marssvn.api.service.business.IRepositoryService;
 import com.marssvn.utils.annotation.cache.CacheRemove;
 import com.marssvn.utils.common.StringUtils;
@@ -39,7 +39,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
     private static final String INIT_COMMENT = "init";
 
     @Autowired
-    private RepositoryBaseService repositoryBaseService;
+    private IRepositoryBaseService repositoryBaseService;
 
     /**
      * Get repository list

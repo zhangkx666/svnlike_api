@@ -1,11 +1,9 @@
 package com.marssvn.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marssvn.BaseApplicationTest;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -21,9 +19,6 @@ import java.util.LinkedHashMap;
 @DirtiesContext
 @SuppressWarnings("unchecked")
 public class RepositoryControllerTest extends BaseApplicationTest {
-
-    @Autowired
-    ObjectMapper objectMapper;
 
     /**
      * repository id
@@ -44,7 +39,7 @@ public class RepositoryControllerTest extends BaseApplicationTest {
         LinkedHashMap result =
                 testRestTemplate.postForObject("/repository", jsonEntity, LinkedHashMap.class);
         repositoryId = ((int) ((LinkedHashMap) result.get("data")).get("id"));
-        Assert.isTrue(result.get("status").equals(1), "Failed to create repository");
+        Assert.isTrue(result.get("status").equals(1), "failed to create repository");
     }
 
     @Test
@@ -60,7 +55,7 @@ public class RepositoryControllerTest extends BaseApplicationTest {
         HttpEntity<LinkedHashMap> jsonEntity = this.getJsonHttpEntity(params);
         LinkedHashMap result =
                 testRestTemplate.postForObject("/repository", jsonEntity, LinkedHashMap.class);
-        Assert.isTrue(result.get("status").equals(0), "Repository created successfully");
+        Assert.isTrue(result.get("status").equals(0), "repository created successfully");
     }
 
     @Test
@@ -101,12 +96,12 @@ public class RepositoryControllerTest extends BaseApplicationTest {
                 this.testRestTemplate.getForObject("/repository/" + repositoryId + "/tree", LinkedHashMap.class);
 
         // status check
-        Assert.isTrue(result.get("status").equals(1), "Failed to get repository tree");
+        Assert.isTrue(result.get("status").equals(1), "failed to get repository tree");
     }
 
     @Test
     public void test06_updateRepositoryById() {
-        // solve "ResourceAccessException Caused by: java.net.ProtocolException: Invalid HTTP method: PATCH"
+        // support HttpMethod.PATCH
         testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 
         // params
@@ -120,7 +115,7 @@ public class RepositoryControllerTest extends BaseApplicationTest {
                 testRestTemplate.patchForObject(
                         "/repository/" + repositoryId, jsonEntity, LinkedHashMap.class);
 
-        Assert.isTrue(result.get("status").equals(1), "Failed to update repository update");
+        Assert.isTrue(result.get("status").equals(1), "failed to update repository update");
     }
 
     @Test
@@ -129,7 +124,7 @@ public class RepositoryControllerTest extends BaseApplicationTest {
                 testRestTemplate.exchange("/repository/" + repositoryId, HttpMethod.DELETE, null, LinkedHashMap.class);
 
         Assert.isTrue(result.getStatusCode() == HttpStatus.OK, "");
-        Assert.isTrue(result.getBody().get("status").equals(1), "Failed to delete repository");
+        Assert.isTrue(result.getBody().get("status").equals(1), "failed to delete repository");
     }
 
     @Test
@@ -166,7 +161,7 @@ public class RepositoryControllerTest extends BaseApplicationTest {
         LinkedHashMap result =
                 testRestTemplate.patchForObject("/repository/" + repositoryId, jsonEntity, LinkedHashMap.class);
 
-        Assert.isTrue(result.get("status").equals(0), "Repository updated successfully");
+        Assert.isTrue(result.get("status").equals(0), "repository updated successfully");
     }
 
     @Test
@@ -175,6 +170,6 @@ public class RepositoryControllerTest extends BaseApplicationTest {
                 this.testRestTemplate.getForObject("/repository/" + repositoryId + "/tree", LinkedHashMap.class);
 
         // status check
-        Assert.isTrue(result.get("status").equals(0), "Get repository tree successfully");
+        Assert.isTrue(result.get("status").equals(0), "get repository tree successfully");
     }
 }

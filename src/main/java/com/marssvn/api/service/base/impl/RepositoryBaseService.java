@@ -1,9 +1,10 @@
-package com.marssvn.api.service.base;
+package com.marssvn.api.service.base.impl;
 
 import com.marssvn.api.model.dto.repository.response.RepositoryTreeDTO;
 import com.marssvn.api.model.entity.SVNDirectory;
 import com.marssvn.api.model.entity.SVNFile;
 import com.marssvn.api.model.entity.SVNLockInfo;
+import com.marssvn.api.service.base.IRepositoryBaseService;
 import com.marssvn.utils.common.StringUtils;
 import com.marssvn.utils.exception.BusinessException;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Service
-public class RepositoryBaseService extends BaseService {
+public class RepositoryBaseService extends BaseService implements IRepositoryBaseService {
 
     /**
      * Create empty directory
