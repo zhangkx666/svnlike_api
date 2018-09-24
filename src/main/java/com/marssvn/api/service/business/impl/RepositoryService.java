@@ -90,6 +90,10 @@ public class RepositoryService extends BaseService implements IRepositoryService
     public int createRepository(RepositoryInputDTO input) {
         String repositoryName = input.getName();
 
+        // 0. repository name can't be blank
+        if (StringUtils.isBlank(repositoryName))
+            throw new BusinessException(message.error("repository.name.blank"));
+
         // 1. repository exists check
         if (_repositoryNameExists(repositoryName))
             throw new BusinessException(message.error("repository.name.duplicate.create", repositoryName));
@@ -130,7 +134,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
             commonDAO.execute("Repository.add", repository);
         } catch (Exception e) {
 
-            // 3.1 delete repository folder and throw business exception when insert failed
+            // 4.1 delete repository folder and throw business exception when insert failed
             try {
                 FileUtils.deleteDirectory(new File(repository.getPath()));
             } catch (IOException ex) {
