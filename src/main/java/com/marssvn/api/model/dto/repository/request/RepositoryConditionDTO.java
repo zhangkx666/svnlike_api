@@ -51,6 +51,6 @@ public class RepositoryConditionDTO extends RequestDTO {
 
     @Override
     public String toString() {
-        return page + keyword;
+        return "page:" + page + ",pageSize:" + pageSize + ",keyword:" + keyword;
     }
 }
