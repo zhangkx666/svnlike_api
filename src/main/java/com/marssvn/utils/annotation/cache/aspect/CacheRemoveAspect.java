@@ -25,9 +25,6 @@ public class CacheRemoveAspect {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-    /**
-     * Logger
-     */
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @AfterReturning("@annotation(com.marssvn.utils.annotation.cache.CacheRemove)")
