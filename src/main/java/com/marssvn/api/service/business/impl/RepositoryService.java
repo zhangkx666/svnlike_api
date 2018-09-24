@@ -7,10 +7,12 @@ import com.marssvn.api.model.entity.Repository;
 import com.marssvn.api.model.po.RepositoryPO;
 import com.marssvn.api.service.base.RepositoryBaseService;
 import com.marssvn.api.service.business.IRepositoryService;
+import com.marssvn.utils.annotation.cache.CacheRemove;
 import com.marssvn.utils.common.StringUtils;
 import com.marssvn.utils.exception.BusinessException;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +47,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
      * @return List
      */
     @Override
-    @Cacheable("repository.many")
+    @Cacheable("repository.list")
     public List<RepositoryPO> getRepositoryList(RepositoryConditionDTO input) {
 
         // Query parameters
@@ -64,7 +66,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
      * @return Repository
      */
     @Override
-    @Cacheable("repository.one")
+    @Cacheable(value = "repository", key = "'id=' + #id")
     public RepositoryPO getRepositoryById(int id) {
 
         // Query parameters
@@ -84,6 +86,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
      */
     @Override
     @Transactional
+    @CacheEvict(value = "repository.list", allEntries = true)
     public int createRepository(RepositoryInputDTO input) {
         String repositoryName = input.getName();
 
@@ -148,6 +151,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
      */
     @Override
     @Transactional
+    @CacheRemove({"repository.list::*", "'repository::id=' + #id", "'repository.tree::id=' + #id + '*'"})
     public void updateRepositoryById(int id, @Valid RepositoryInputDTO input) {
         String newRepositoryName = input.getName();
 
@@ -179,6 +183,8 @@ public class RepositoryService extends BaseService implements IRepositoryService
             repository.setPath(StringUtils.windowsPath2LinuxPath(newFolder.getPath()));
         }
 
+        // update title and description
+        repository.setTitle(input.getTitle());
         repository.setDescription(input.getDescription());
 
         // update db
@@ -192,6 +198,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
      */
     @Override
     @Transactional
+    @CacheRemove({"repository.list::*", "'repository::id=' + #id", "'repository.tree::id=' + #id + '*'"})
     public void deleteRepositoryById(int id) {
 
         // query repository
@@ -221,7 +228,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
      * @return repository tree
      */
     @Override
-    @Cacheable(value = "repository.tree", key = "#id + #path")
+    @Cacheable(value = "repository.tree", key = "'id=' + #id + ',path=' + #path")
     public RepositoryTreeDTO getRepositoryTreeById(int id, String path) {
 
         // query repository
@@ -231,6 +238,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
 
         // get repository tree
         String repositoryPath = repositoryPO.getProtocol().getPrefix() + repositoryPO.getPath();
+
         return repositoryBaseService.getRepositoryTree(repositoryPath, repositoryPO.getName(), path);
     }
 
