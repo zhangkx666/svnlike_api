@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 /**
  * RestController response dto
+ * @author zhangkx
  */
 @Getter
 @Setter
@@ -64,7 +65,7 @@ public class JsonResult {
      * @param message message content
      */
     public void setMessage(String type, String message) {
-        HashMap<String, String> messageMap = new HashMap<>();
+        HashMap<String, String> messageMap = new HashMap<>(2);
         messageMap.put("type", type);
         messageMap.put("content", message);
         this.message = messageMap;

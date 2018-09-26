@@ -29,9 +29,10 @@ import static com.marssvn.utils.enums.ESVNProtocol.FILE;
 
 /**
  * Repository Service
+ * @author zhangkx
  */
 @Service
-public class RepositoryService extends BaseService implements IRepositoryService {
+public class RepositoryServiceImpl extends BaseService implements IRepositoryService {
 
     /**
      * repository init comment
@@ -51,7 +52,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
     public List<RepositoryPO> getRepositoryList(RepositoryConditionDTO input) {
 
         // Query parameters
-        HashMap<String, Object> params = new HashMap<>();
+        HashMap<String, Object> params = new HashMap<>(3);
         params.put("keyword", input.getKeyword());
         params.put("offset", (input.getPage() - 1) * input.getPageSize());
         params.put("pageSize", input.getPageSize());
@@ -70,7 +71,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
     public RepositoryPO getRepositoryById(int id) {
 
         // Query parameters
-        HashMap<String, Object> params = new HashMap<>();
+        HashMap<String, Object> params = new HashMap<>(1);
         params.put("id", id);
 
         // Query repository list
@@ -91,12 +92,14 @@ public class RepositoryService extends BaseService implements IRepositoryService
         String repositoryName = input.getName();
 
         // 0. repository name can't be blank
-        if (StringUtils.isBlank(repositoryName))
+        if (StringUtils.isBlank(repositoryName)) {
             throw new BusinessException(message.error("repository.name.blank"));
+        }
 
         // 1. repository exists check
-        if (_repositoryNameExists(repositoryName))
+        if (_repositoryNameExists(repositoryName)) {
             throw new BusinessException(message.error("repository.name.duplicate.create", repositoryName));
+        }
 
         // 2. create repository
         SVNURL svnurl = repositoryBaseService.createSvnRepository(repositoryName);
@@ -161,8 +164,9 @@ public class RepositoryService extends BaseService implements IRepositoryService
 
         // query repository
         RepositoryPO repositoryPO = this.getRepositoryById(id);
-        if (repositoryPO == null)
+        if (repositoryPO == null) {
             throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
+        }
 
         // Repository
         Repository repository = repositoryPO.convertTo(Repository.class);
@@ -171,8 +175,9 @@ public class RepositoryService extends BaseService implements IRepositoryService
         if (StringUtils.isNotBlank(newRepositoryName) && !newRepositoryName.equals(repository.getName())) {
 
             // new repository name
-            if (_repositoryNameExists(newRepositoryName))
+            if (_repositoryNameExists(newRepositoryName)) {
                 throw new BusinessException(message.error("repository.name.duplicate.update", newRepositoryName));
+            }
 
             File oldFolder = new File(repository.getPath());
             File newFolder = new File(oldFolder.getParentFile().getPath() + "/" + newRepositoryName);
@@ -207,11 +212,12 @@ public class RepositoryService extends BaseService implements IRepositoryService
 
         // query repository
         RepositoryPO repositoryPO = this.getRepositoryById(id);
-        if (repositoryPO == null)
+        if (repositoryPO == null) {
             throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
+        }
 
         // delete db data
-        HashMap<String, Object> params = new HashMap<>();
+        HashMap<String, Object> params = new HashMap<>(1);
         params.put("id", id);
         commonDAO.execute("Repository.deleteById", params);
 
@@ -237,8 +243,9 @@ public class RepositoryService extends BaseService implements IRepositoryService
 
         // query repository
         RepositoryPO repositoryPO = this.getRepositoryById(id);
-        if (repositoryPO == null)
+        if (repositoryPO == null) {
             throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
+        }
 
         // get repository tree
         String repositoryPath = repositoryPO.getProtocol().getPrefix() + repositoryPO.getPath();
@@ -253,7 +260,7 @@ public class RepositoryService extends BaseService implements IRepositoryService
      * @return boolean
      */
     private boolean _repositoryNameExists(String repositoryName) {
-        HashMap<String, Object> params = new HashMap<>();
+        HashMap<String, Object> params = new HashMap<>(1);
         params.put("name", repositoryName);
         int count = commonDAO.queryForObject("Repository.selectCountByName", params, Integer.class);
         return count > 0;

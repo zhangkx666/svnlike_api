@@ -166,8 +166,7 @@ public class RepositoryControllerTest extends BaseApplicationTest {
 
     @Test
     public void test11_getNotExistsRepositoryTree() {
-        LinkedHashMap result =
-                this.testRestTemplate.getForObject("/repository/" + repositoryId + "/tree", LinkedHashMap.class);
+        LinkedHashMap result = this.testRestTemplate.getForObject("/repository/" + repositoryId + "/tree", LinkedHashMap.class);
 
         // status check
         Assert.isTrue(result.get("status").equals(0), "get repository tree successfully");

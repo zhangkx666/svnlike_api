@@ -18,7 +18,7 @@ public class RequestInterceptor implements HandlerInterceptor {
                              Object handler) throws Exception {
 
         // url
-        if (request.getMethod().equals("GET") && request.getQueryString() != null) {
+        if ("GET".equals(request.getMethod()) && request.getQueryString() != null) {
             System.out.println("\n" + request.getMethod() + " " + request.getRequestURL().toString() +
                     "?" + request.getQueryString());
         } else {

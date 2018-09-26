@@ -18,6 +18,10 @@ import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+/**
+ * cache fuzzy remove aspect
+ * @author zhangkx
+ */
 @Aspect
 @Component
 public class CacheRemoveAspect {
@@ -33,8 +37,9 @@ public class CacheRemoveAspect {
         CacheRemove cacheRemove = method.getAnnotation(CacheRemove.class);
         String[] keys = cacheRemove.value();
         for (String key : keys) {
-            if (key.contains("#"))
+            if (key.contains("#")) {
                 key = parseKey(key, method, point.getArgs());
+            }
 
             Set<String> deleteKeys = stringRedisTemplate.keys(key);
             stringRedisTemplate.delete(deleteKeys);

@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.sql.SQLSyntaxErrorException;
 import java.util.HashMap;
 
+/**
+ * GlobalExceptionHandler Advice
+ * @author zhangkx
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -52,7 +56,7 @@ public class GlobalExceptionHandler {
         JsonResult jsonResult = new JsonResult();
         jsonResult.setStatus(0);
         jsonResult.setErrorCode("VALIDATION_ERROR");
-        HashMap<String, String> message = new HashMap<>();
+        HashMap<String, String> message = new HashMap<>(3);
         message.put("type", Message.MESSAGE_TYPE_ERROR);
         message.put("field", fieldError.getField());
         message.put("content", fieldError.getDefaultMessage());

@@ -21,8 +21,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Repository Base Service
+ * @author zhangkx
+ */
 @Service
-public class RepositoryBaseService extends BaseService implements IRepositoryBaseService {
+public class RepositoryBaseServiceImpl extends BaseService implements IRepositoryBaseService {
 
     /**
      * Create empty directory
@@ -30,6 +34,7 @@ public class RepositoryBaseService extends BaseService implements IRepositoryBas
      * @param svnurls SVNURL
      * @param comment String
      */
+    @Override
     public void createDirectory(SVNURL[] svnurls, String comment) {
 
         try {
@@ -50,6 +55,7 @@ public class RepositoryBaseService extends BaseService implements IRepositoryBas
      * @param repositoryName repository name
      * @return SVNURL
      */
+    @Override
     public SVNURL createSvnRepository(String repositoryName) {
         try {
             // svn root path, here we use use home path
@@ -63,8 +69,9 @@ public class RepositoryBaseService extends BaseService implements IRepositoryBas
             logger.error(e.getMessage());
 
             // svn: E204899: '/home/svn/#{repositoryName}' already exists; use 'force' to overwrite existing svnFiles
-            if (204899 == e.getErrorMessage().getErrorCode().getCode())
+            if (204899 == e.getErrorMessage().getErrorCode().getCode()) {
                 throw new BusinessException(message.error("repository.name.duplicate.create", repositoryName));
+            }
             throw new BusinessException(message.error("repository.create.failed"));
         }
     }
@@ -77,6 +84,7 @@ public class RepositoryBaseService extends BaseService implements IRepositoryBas
      * @param path           path
      * @return SVNDirectory
      */
+    @Override
     public RepositoryTreeDTO getRepositoryTree(String repositoryPath, String repositoryName, String path) {
         try {
             FSRepositoryFactory.setup();
@@ -94,8 +102,9 @@ public class RepositoryBaseService extends BaseService implements IRepositoryBas
                 SVNDirEntry svnDirEntry = repository.getDir(path, -1L, true, null);
 
                 // if the path is a file
-                if (svnDirEntry.getKind() == SVNNodeKind.FILE)
+                if (svnDirEntry.getKind() == SVNNodeKind.FILE) {
                     throw new BusinessException(message.error("repository.path.not_directory", path));
+                }
 
                 // author, revision, commitMessage
                 directory.copyPropertiesFrom(svnDirEntry);
@@ -125,8 +134,9 @@ public class RepositoryBaseService extends BaseService implements IRepositoryBas
             logger.error(e.getMessage());
 
             // svn: E160013: Attempted to open non-existent child node '#{path}'
-            if (160013 == e.getErrorMessage().getErrorCode().getCode())
+            if (160013 == e.getErrorMessage().getErrorCode().getCode()) {
                 throw new BusinessException(message.error("repository.path.not_exists", path));
+            }
             throw new BusinessException(e.getMessage());
         }
     }

@@ -23,4 +23,9 @@ public class RepositoryTreeConditionDTO extends RequestDTO {
     public String getPath() {
         return path == null ? "" : path.trim();
     }
+
+    @Override
+    public String toString() {
+        return "path:" + getPath();
+    }
 }

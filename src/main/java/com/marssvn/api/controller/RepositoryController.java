@@ -17,6 +17,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * repository controller
+ * @author zhangkx
+ */
 @RestController
 @RequestMapping("/repository")
 public class RepositoryController extends BaseController {
@@ -46,8 +50,9 @@ public class RepositoryController extends BaseController {
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     public JsonResult show(@PathVariable(value = "id") int id) {
         RepositoryPO repositoryPO = repositoryService.getRepositoryById(id);
-        if (repositoryPO == null)
+        if (repositoryPO == null) {
             throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
+        }
 
         return new JsonResult(repositoryPO.convertTo(RepositoryDTO.class));
     }
@@ -75,7 +80,7 @@ public class RepositoryController extends BaseController {
         int repositoryId = repositoryService.createRepository(input);
 
         // output
-        HashMap<String, Integer> output = new HashMap<>();
+        HashMap<String, Integer> output = new HashMap<>(1);
         output.put("id", repositoryId);
 
         // json result

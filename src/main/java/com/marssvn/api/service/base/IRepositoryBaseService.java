@@ -5,6 +5,7 @@ import org.tmatesoft.svn.core.SVNURL;
 
 /**
  * Repository Base Service
+ * @author zhangkx
  */
 public interface IRepositoryBaseService {
 

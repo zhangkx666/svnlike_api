@@ -5,9 +5,14 @@ import com.marssvn.api.model.entity.Entity;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * common dao
+ * @author zhangkx
+ */
 public interface ICommonDAO {
 
     /**
+     * query for int
      * @param sqlId    sql id in mapper.xml
      * @param <E>      Object Type
      * @return Object
@@ -15,6 +20,7 @@ public interface ICommonDAO {
     <E> E queryForInt(String sqlId);
 
     /**
+     * query for int with parameters
      * @param sqlId    sql id in mapper.xml
      * @param paramMap params
      * @param <E>      Object Type
@@ -23,6 +29,7 @@ public interface ICommonDAO {
     <E> E queryForInt(String sqlId, Map paramMap);
 
     /**
+     * query for object
      * @param sqlId    sql id in mapper.xml
      * @param clazz    class
      * @param <E>      Object Type
@@ -31,6 +38,7 @@ public interface ICommonDAO {
     <E> E queryForObject(String sqlId, Class clazz);
 
     /**
+     * query for object with parameters
      * @param sqlId    sql id in mapper.xml
      * @param paramMap params
      * @param clazz    class
@@ -40,14 +48,14 @@ public interface ICommonDAO {
     <E> E queryForObject(String sqlId, Map paramMap, Class clazz);
 
     /**
-     * execute for list
+     * query for list
      * @param sqlId sql id in mapper.xml
      * @return ArrayList
      */
     <E> List<E> queryForList(String sqlId);
 
     /**
-     * execute for list
+     * execute for list with parameters
      * @param sqlId sql id in mapper.xml
      * @param paramMap parameters
      * @return ArrayList
@@ -55,7 +63,7 @@ public interface ICommonDAO {
     <E> List<E> queryForList(String sqlId, Map paramMap);
 
     /**
-     * execute sql
+     * execute sql with parameter map
      * @param sqlId sql id in mapper.xml
      * @param paramMap parameters
      * @return row count
@@ -63,7 +71,7 @@ public interface ICommonDAO {
     int execute(String sqlId, Map paramMap);
 
     /**
-     * execute sql
+     * execute sql with parameter entity
      * @param sqlId sql id in mapper.xml
      * @param entity parameter entity
      * @return primary key

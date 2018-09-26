@@ -1,5 +1,9 @@
 package com.marssvn.utils.common;
 
+/**
+ * String utils
+ * @author zhangkx
+ */
 public class StringUtils {
 
     /**
@@ -50,10 +54,12 @@ public class StringUtils {
      * @return linux path
      */
     public static String windowsPath2LinuxPath(String windowsPath) {
-        if (windowsPath == null)
+        if (windowsPath == null) {
             return null;
-        if (!windowsPath.startsWith("/"))
+        }
+        if (!windowsPath.startsWith("/")) {
             windowsPath = "/" + windowsPath;
+        }
         return windowsPath.replace("\\", "/");
     }
 }

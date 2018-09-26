@@ -44,6 +44,7 @@ public class ApiApplication implements WebMvcConfigurer {
      * Validation message i18n
      * @return Validator
      */
+    @Override
     @NotNull
     @Bean
     public Validator getValidator() {

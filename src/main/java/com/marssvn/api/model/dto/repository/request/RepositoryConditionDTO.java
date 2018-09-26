@@ -17,12 +17,12 @@ public class RepositoryConditionDTO extends RequestDTO {
     /**
      * Page number
      */
-    private int page;
+    private Integer page;
 
     /**
      * Page size
      */
-    private int pageSize;
+    private Integer pageSize;
 
     /**
      * Get trimmed keyword
@@ -38,7 +38,7 @@ public class RepositoryConditionDTO extends RequestDTO {
      * @return page
      */
     public int getPage() {
-        return page == 0 ? 1 : page;
+        return page == null ? 1 : page;
     }
 
     /**
@@ -46,7 +46,7 @@ public class RepositoryConditionDTO extends RequestDTO {
      * @return pageSize
      */
     public int getPageSize() {
-        return pageSize == 0 ? 15 : pageSize;
+        return pageSize == null ? 15 : pageSize;
     }
 
     @Override

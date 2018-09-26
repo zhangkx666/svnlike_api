@@ -13,10 +13,12 @@ import java.util.Map;
 
 /**
  * CommonDAOImpl
+ * @author zhangkx
  */
 @Repository
 public class CommonDAOImpl extends SqlSessionDaoSupport implements ICommonDAO {
 
+    @Override
     @Autowired
     public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
         super.setSqlSessionFactory(sqlSessionFactory);

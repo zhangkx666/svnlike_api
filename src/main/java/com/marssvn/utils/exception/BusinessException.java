@@ -3,6 +3,10 @@ package com.marssvn.utils.exception;
 import com.marssvn.utils.message.Message;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * BusinessException
+ * @author zhangkx
+ */
 public class BusinessException extends RuntimeException{
 
     /**

@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * Repository Service
+ * @author zhangkx
  */
 public interface IRepositoryService {
 
@@ -50,5 +51,11 @@ public interface IRepositoryService {
      */
     void deleteRepositoryById(int id);
 
+    /**
+     * Get repository tree
+     * @param id repositoryId
+     * @param path repository path
+     * @return
+     */
     RepositoryTreeDTO getRepositoryTreeById(int id, String path);
 }
