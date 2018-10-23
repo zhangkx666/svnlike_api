@@ -6,30 +6,30 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
-public class SVNFile extends Entity {
+public class SVNTreeItem extends Entity {
 
     /**
-     * file name
+     * type
+     */
+    private String type = "dir";
+
+    /**
+     * name
      */
     private String name;
 
     /**
-     * file extension
+     * extension (file only)
      */
     @JsonProperty("ext")
     private String extension;
 
     /**
-     * mime type
-     */
-    @JsonProperty("mime")
-    private String mimeType;
-
-    /**
-     * file path
+     * path
      */
     private String path;
 
@@ -39,7 +39,12 @@ public class SVNFile extends Entity {
     private String parentPath;
 
     /**
-     * file size
+     * full path
+     */
+//    private String fullPath;
+
+    /**
+     * size (file only)
      */
     private long size;
 
@@ -55,11 +60,6 @@ public class SVNFile extends Entity {
     private String author;
 
     /**
-     * content (text file only)
-     */
-    private String content;
-
-    /**
      * date
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -72,7 +72,12 @@ public class SVNFile extends Entity {
     private String commitMessage;
 
     /**
-     * lockOwner
+     * lockOwner (file only)
      */
     private SVNLockInfo lock;
+
+    /**
+     * sub directories (directory only)
+     */
+    private List<SVNTreeItem> children;
 }

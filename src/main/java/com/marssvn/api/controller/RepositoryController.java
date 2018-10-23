@@ -2,6 +2,7 @@ package com.marssvn.api.controller;
 
 import com.marssvn.api.model.dto.JsonResult;
 import com.marssvn.api.model.dto.repository.request.RepositoryConditionDTO;
+import com.marssvn.api.model.dto.repository.request.RepositoryFileDTO;
 import com.marssvn.api.model.dto.repository.request.RepositoryInputDTO;
 import com.marssvn.api.model.dto.repository.request.RepositoryTreeConditionDTO;
 import com.marssvn.api.model.dto.repository.response.RepositoryDTO;
@@ -42,16 +43,16 @@ public class RepositoryController extends BaseController {
     }
 
     /**
-     * Get repository by repository id
+     * Get repository by repository name
      *
-     * @param id repository id
+     * @param name repository name
      * @return JsonResult
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
-    public JsonResult show(@PathVariable(value = "id") int id) {
-        RepositoryPO repositoryPO = repositoryService.getRepositoryById(id);
+    @RequestMapping(method = RequestMethod.GET, value = "/{name}")
+    public JsonResult show(@PathVariable(value = "name") String name) {
+        RepositoryPO repositoryPO = repositoryService.getRepositoryByName(name);
         if (repositoryPO == null) {
-            throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
+            throw new BusinessException(message.error("repository.name_not_exists", name));
         }
 
         return new JsonResult(repositoryPO.convertTo(RepositoryDTO.class));
@@ -60,12 +61,23 @@ public class RepositoryController extends BaseController {
     /**
      * Get repository tree
      *
-     * @param id repository id
+     * @param name repository name
      * @return JsonResult
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/{id}/tree")
-    public JsonResult tree(@PathVariable("id") int id, RepositoryTreeConditionDTO input) {
-        return new JsonResult(repositoryService.getRepositoryTreeById(id, input.getPath()));
+    @RequestMapping(method = RequestMethod.GET, value = "/{name}/tree")
+    public JsonResult tree(@PathVariable("name") String name, RepositoryTreeConditionDTO input) {
+        return new JsonResult(repositoryService.getRepositoryTreeByName(name, input.getPath(), input.getGetAll()));
+    }
+
+    /**
+     * get file
+     * @param name  repository name
+     * @param input RepositoryFileDTO
+     * @return JsonResult
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/{name}/file")
+    public JsonResult file(@PathVariable("name") String name, RepositoryFileDTO input) {
+        return new JsonResult(repositoryService.getRepositoryFile(name, input.getPath()));
     }
 
     /**

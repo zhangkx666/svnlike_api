@@ -2,8 +2,9 @@ package com.marssvn.api.service.business.impl;
 
 import com.marssvn.api.model.dto.repository.request.RepositoryConditionDTO;
 import com.marssvn.api.model.dto.repository.request.RepositoryInputDTO;
-import com.marssvn.api.model.dto.repository.response.RepositoryTreeDTO;
 import com.marssvn.api.model.entity.Repository;
+import com.marssvn.api.model.entity.SVNFile;
+import com.marssvn.api.model.entity.SVNTreeItem;
 import com.marssvn.api.model.po.RepositoryPO;
 import com.marssvn.api.service.base.IRepositoryBaseService;
 import com.marssvn.api.service.business.IRepositoryService;
@@ -76,6 +77,23 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
 
         // Query repository list
         return commonDAO.queryForObject("Repository.selectOne", params, RepositoryPO.class);
+    }
+
+    /**
+     * Get repository by name
+     *
+     * @param name repository name
+     * @return Repository
+     */
+    @Override
+    @Cacheable(value = "repository", key = "'name=' + #name")
+    public RepositoryPO getRepositoryByName(String name) {
+        // Query parameters
+        HashMap<String, Object> params = new HashMap<>(1);
+        params.put("name", name);
+
+        // Query repository list
+        return commonDAO.queryForObject("Repository.selectOneByName", params, RepositoryPO.class);
     }
 
     /**
@@ -231,15 +249,16 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
     }
 
     /**
-     * get repository tree
+     * Get repository tree
      *
-     * @param id   repository id
-     * @param path repository path
-     * @return repository tree
+     * @param id     repositoryId
+     * @param path   repository path
+     * @param getALl get all children
+     * @return SVNTreeItem
      */
     @Override
-    @Cacheable(value = "repository.tree", key = "'id=' + #id + ',path=' + #path")
-    public RepositoryTreeDTO getRepositoryTreeById(int id, String path) {
+    @Cacheable(value = "repository.tree", key = "'id=' + #id + ',path=' + #path + ',getAll=' + #getALl")
+    public SVNTreeItem getRepositoryTreeById(int id, String path, Boolean getALl) {
 
         // query repository
         RepositoryPO repositoryPO = this.getRepositoryById(id);
@@ -250,7 +269,50 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
         // get repository tree
         String repositoryPath = repositoryPO.getProtocol().getPrefix() + repositoryPO.getPath();
 
-        return repositoryBaseService.getRepositoryTree(repositoryPath, repositoryPO.getName(), path);
+        return repositoryBaseService.getRepositoryTree(repositoryPath, repositoryPO.getName(), path, getALl);
+    }
+
+    /**
+     * get repository tree by name
+     * @param repositoryName           repository name
+     * @param path           repository path
+     * @param getALl         get all children
+     * @return SVNTreeItem
+     */
+    @Override
+    @Cacheable(value = "repository.tree", key = "'name=' + #repositoryName + ',path=' + #path + ',getAll=' + #getALl")
+    public SVNTreeItem getRepositoryTreeByName(String repositoryName, String path, Boolean getALl) {
+
+        // query repository
+        RepositoryPO repositoryPO = this.getRepositoryByName(repositoryName);
+        if (repositoryPO == null) {
+            throw new BusinessException(message.error("repository.name_not_exists", repositoryName));
+        }
+
+        // get repository tree
+        String repositoryPath = repositoryPO.getProtocol().getPrefix() + repositoryPO.getPath();
+
+        return repositoryBaseService.getRepositoryTree(repositoryPath, repositoryPO.getName(), path, getALl);
+    }
+
+    /**
+     * get file content
+     * @param repositoryName repository name
+     * @param path path
+     * @return string file content
+     */
+    @Override
+    public SVNFile getRepositoryFile(String repositoryName, String path) {
+        // query repository
+        RepositoryPO repositoryPO = this.getRepositoryByName(repositoryName);
+        if (repositoryPO == null) {
+            throw new BusinessException(message.error("repository.name_not_exists", repositoryName));
+        }
+
+        // get repository tree
+        String repositoryPath = repositoryPO.getProtocol().getPrefix() + repositoryPO.getPath();
+
+        return repositoryBaseService.getRepositoryFile(repositoryPath, path);
     }
 
     /**

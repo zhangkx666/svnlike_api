@@ -7,17 +7,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RepositoryTreeConditionDTO extends RequestDTO {
+public class RepositoryFileDTO extends RequestDTO {
 
     /**
      * path
      */
     private String path;
-
-    /**
-     * get full path
-     */
-    private Boolean getAll;
 
     /**
      * Get trimmed path
@@ -28,16 +23,8 @@ public class RepositoryTreeConditionDTO extends RequestDTO {
         return path == null ? "" : path.trim();
     }
 
-    /**
-     * get all
-     * @return boolean
-     */
-    public Boolean getGetAll() {
-        return getAll == null ? false : getAll;
-    }
-
     @Override
     public String toString() {
-        return "path:" + getPath() + ",includeAll=" + getGetAll();
+        return "path:" + getPath();
     }
 }

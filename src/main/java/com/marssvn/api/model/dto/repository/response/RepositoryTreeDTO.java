@@ -1,7 +1,7 @@
 package com.marssvn.api.model.dto.repository.response;
 
 import com.marssvn.api.model.dto.ResponseDTO;
-import com.marssvn.api.model.entity.SVNDirectory;
+import com.marssvn.api.model.entity.SVNTreeItem;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,5 +27,5 @@ public class RepositoryTreeDTO extends ResponseDTO {
     /**
      * directory
      */
-    private SVNDirectory tree;
+    private SVNTreeItem tree;
 }

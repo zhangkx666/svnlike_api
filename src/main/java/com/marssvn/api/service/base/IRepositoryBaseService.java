@@ -1,6 +1,7 @@
 package com.marssvn.api.service.base;
 
-import com.marssvn.api.model.dto.repository.response.RepositoryTreeDTO;
+import com.marssvn.api.model.entity.SVNFile;
+import com.marssvn.api.model.entity.SVNTreeItem;
 import org.tmatesoft.svn.core.SVNURL;
 
 /**
@@ -31,7 +32,10 @@ public interface IRepositoryBaseService {
      * @param repositoryPath repository path
      * @param repositoryName repository name
      * @param path           path
+     * @param getALl         get all
      * @return SVNDirectory
      */
-    RepositoryTreeDTO getRepositoryTree(String repositoryPath, String repositoryName, String path);
+    SVNTreeItem getRepositoryTree(String repositoryPath, String repositoryName, String path, Boolean getALl);
+
+    SVNFile getRepositoryFile(String repositoryPath, String filePath);
 }

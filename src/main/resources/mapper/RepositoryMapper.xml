@@ -50,6 +50,11 @@
         WHERE rep.id = #{id};
     </select>
 
+    <select id="selectOneByName" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+        <include refid="selectRepositoryJoinUserAndProject"/>
+        WHERE rep.name = #{name};
+    </select>
+
     <select id="selectMany" parameterType="java.util.HashMap" resultMap="BaseResultMap">
         <include refid="selectRepositoryJoinUserAndProject"/>
         <where>
