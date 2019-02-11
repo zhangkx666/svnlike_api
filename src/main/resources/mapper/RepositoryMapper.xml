@@ -18,7 +18,10 @@
 
     <update id="updateById" parameterType="com.marssvn.api.model.entity.Repository">
         UPDATE repository
-        SET `title` = #{title}, `name` = #{name}, `path` = #{path}, `description` = #{description}
+        SET `title`       = #{title},
+            `name`        = #{name},
+            `path`        = #{path},
+            `description` = #{description}
         WHERE `id` = #{id};
     </update>
 
@@ -26,7 +29,7 @@
         DELETE FROM repository WHERE id = #{id}
     </delete>
 
-    <sql id="selectRepositoryJoinUserAndProject">
+    <sql id="/">
         SELECT
             rep.`id`,
             rep.`project_id`,

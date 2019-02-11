@@ -33,6 +33,8 @@ mybatis:
 logging:
 #  path: ./logs
   level:
+#    root: debug
     org.apache.coyote.http11.Http11InputBuffer: debug
+    com.marssvn.svnapi.*: debug
     druid.sql.Statement: debug
 

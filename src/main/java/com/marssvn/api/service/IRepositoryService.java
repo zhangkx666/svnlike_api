@@ -1,4 +1,4 @@
-package com.marssvn.api.service.business;
+package com.marssvn.api.service;
 
 import com.marssvn.api.model.dto.repository.request.RepositoryConditionDTO;
 import com.marssvn.api.model.dto.repository.request.RepositoryInputDTO;
@@ -65,15 +65,15 @@ public interface IRepositoryService {
      */
     void deleteRepositoryById(int id);
 
-    /**
-     * Get repository tree
-     *
-     * @param id     repositoryId
-     * @param path   repository path
-     * @param getALl get all children
-     * @return SVNTreeItem
-     */
-    SVNTreeItem getRepositoryTreeById(int id, String path, Boolean getALl);
+//    /**
+//     * Get repository tree
+//     *
+//     * @param id     repositoryId
+//     * @param path   repository path
+//     * @param getALl get all children
+//     * @return SVNTreeItem
+//     */
+//    SVNTreeItem getRepositoryTreeById(int id, String path, Boolean getALl);
 
     /**
      * get repository tree by name

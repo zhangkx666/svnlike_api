@@ -1,4 +1,4 @@
-package com.marssvn.api.service.business.impl;
+package com.marssvn.api.service.impl;
 
 import com.marssvn.api.model.dto.repository.request.RepositoryConditionDTO;
 import com.marssvn.api.model.dto.repository.request.RepositoryInputDTO;
@@ -6,8 +6,10 @@ import com.marssvn.api.model.entity.Repository;
 import com.marssvn.api.model.entity.SVNFile;
 import com.marssvn.api.model.entity.SVNTreeItem;
 import com.marssvn.api.model.po.RepositoryPO;
-import com.marssvn.api.service.base.IRepositoryBaseService;
-import com.marssvn.api.service.business.IRepositoryService;
+import com.marssvn.api.service.IRepositoryService;
+import com.marssvn.svnapi.ISVNAdmin;
+import com.marssvn.svnapi.ISVNClient;
+import com.marssvn.svnapi.model.SVNUser;
 import com.marssvn.utils.annotation.cache.CacheRemove;
 import com.marssvn.utils.common.StringUtils;
 import com.marssvn.utils.exception.BusinessException;
@@ -17,8 +19,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNURL;
 
 import javax.validation.Valid;
 import java.io.File;
@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.marssvn.utils.enums.ESVNProtocol.FILE;
+import static com.marssvn.utils.enums.ESVNProtocol.SVN;
 
 /**
  * Repository Service
@@ -40,8 +40,15 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
      */
     private static final String INIT_COMMENT = "init";
 
+    private ISVNAdmin svnAdmin;
+
+    private final ISVNClient svnClient;
+
     @Autowired
-    private IRepositoryBaseService repositoryBaseService;
+    public RepositoryServiceImpl(ISVNAdmin svnAdmin, ISVNClient svnClient) {
+        this.svnAdmin = svnAdmin;
+        this.svnClient = svnClient;
+    }
 
     /**
      * Get repository list
@@ -120,39 +127,37 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
         }
 
         // 2. create repository
-        SVNURL svnurl = repositoryBaseService.createSvnRepository(repositoryName);
+        String svnPath = svnAdmin.createRepository(null, repositoryName);
 
-        // 3. create trunk, branches, tags
-        // if autoMakeDir = true, create trunk, branches, tags directory
-        if (input.getAutoMakeDir()) {
-            try {
-                // trunk
-                SVNURL trunk = svnurl.appendPath("trunk", false);
-
-                // create branches
-                SVNURL branches = svnurl.appendPath("branches", false);
-
-                // create tags
-                SVNURL tags = svnurl.appendPath("tags", false);
-
-                repositoryBaseService.createDirectory(new SVNURL[]{trunk, branches, tags}, INIT_COMMENT);
-            } catch (SVNException | BusinessException e) {
-                logger.error(e.getMessage());
-            }
-        }
-
-        // 4. write repository db data
+        // 3. write repository db data
         Repository repository = new Repository();
         repository.setUserId(uvo.getId());
         repository.setName(repositoryName);
         repository.setTitle(input.getTitle());
         repository.setProjectId(input.getProjectId());
         repository.setDescription(input.getDescription());
-        repository.setPath(svnurl.getPath());
-        repository.setProtocol(FILE);
+        repository.setPath(svnPath);
+        repository.setProtocol(SVN);
 
         try {
             commonDAO.execute("Repository.add", repository);
+
+            // 4. create trunk, branches, tags
+            // if autoMakeDir = true, create trunk, branches, tags directory
+            if (input.getAutoMakeDir()) {
+
+                this.svnClient.setRootPath(repository.getUrl());
+                this.svnClient.setSvnUser(new SVNUser("", ""));
+
+                // trunk
+                svnClient.mkdir("trunk", "init");
+
+                // create branches
+                svnClient.mkdir("branches", "init");
+
+                // create tags
+                svnClient.mkdir("tags", "init");
+            }
         } catch (Exception e) {
 
             // 4.1 delete repository folder and throw business exception when insert failed
@@ -161,7 +166,7 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
             } catch (IOException ex) {
                 logger.error(ex.getMessage());
             }
-            logger.error(e.getMessage());
+            e.printStackTrace();
             throw new BusinessException(message.error("repository.create.failed"));
         }
 
@@ -248,29 +253,29 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
         }
     }
 
-    /**
-     * Get repository tree
-     *
-     * @param id     repositoryId
-     * @param path   repository path
-     * @param getALl get all children
-     * @return SVNTreeItem
-     */
-    @Override
-    @Cacheable(value = "repository.tree", key = "'id=' + #id + ',path=' + #path + ',getAll=' + #getALl")
-    public SVNTreeItem getRepositoryTreeById(int id, String path, Boolean getALl) {
-
-        // query repository
-        RepositoryPO repositoryPO = this.getRepositoryById(id);
-        if (repositoryPO == null) {
-            throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
-        }
-
-        // get repository tree
-        String repositoryPath = repositoryPO.getProtocol().getPrefix() + repositoryPO.getPath();
-
-        return repositoryBaseService.getRepositoryTree(repositoryPath, repositoryPO.getName(), path, getALl);
-    }
+//    /**
+//     * Get repository tree
+//     *
+//     * @param id     repositoryId
+//     * @param path   repository path
+//     * @param getALl get all children
+//     * @return SVNTreeItem
+//     */
+//    @Override
+//    @Cacheable(value = "repository.tree", key = "'id=' + #id + ',path=' + #path + ',getAll=' + #getALl")
+//    public SVNTreeItem getRepositoryTreeById(int id, String path, Boolean getALl) {
+//
+//        // query repository
+//        RepositoryPO repositoryPO = repositoryService.getRepositoryById(id);
+//        if (repositoryPO == null) {
+//            throw new BusinessException(message.error("repository.not_exists", String.valueOf(id)));
+//        }
+//
+//        // get repository tree
+//        String repositoryPath = repositoryPO.getProtocol().getPrefix() + repositoryPO.getPath();
+//
+//        return repositoryBaseService.getRepositoryTree(repositoryPath, repositoryPO.getName(), path, getALl);
+//    }
 
     /**
      * get repository tree by name
@@ -283,16 +288,18 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
     @Cacheable(value = "repository.tree", key = "'name=' + #repositoryName + ',path=' + #path + ',getAll=' + #getALl")
     public SVNTreeItem getRepositoryTreeByName(String repositoryName, String path, Boolean getALl) {
 
-        // query repository
-        RepositoryPO repositoryPO = this.getRepositoryByName(repositoryName);
-        if (repositoryPO == null) {
-            throw new BusinessException(message.error("repository.name_not_exists", repositoryName));
-        }
+//        // query repository
+//        RepositoryPO repositoryPO = repositoryService.getRepositoryByName(repositoryName);
+//        if (repositoryPO == null) {
+//            throw new BusinessException(message.error("repository.name_not_exists", repositoryName));
+//        }
+//
+//        // get repository tree
+//        String repositoryPath = repositoryPO.getProtocol().getPrefix() + repositoryPO.getPath();
+//
+//        return repositoryBaseService.getRepositoryTree(repositoryPath, repositoryPO.getName(), path, getALl);
 
-        // get repository tree
-        String repositoryPath = repositoryPO.getProtocol().getPrefix() + repositoryPO.getPath();
-
-        return repositoryBaseService.getRepositoryTree(repositoryPath, repositoryPO.getName(), path, getALl);
+        return null;
     }
 
     /**
@@ -302,6 +309,7 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
      * @return string file content
      */
     @Override
+    @Cacheable(value = "repository.file",  key = "'name=' + #repositoryName + ',path=' + #path")
     public SVNFile getRepositoryFile(String repositoryName, String path) {
         // query repository
         RepositoryPO repositoryPO = this.getRepositoryByName(repositoryName);
@@ -312,7 +320,9 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
         // get repository tree
         String repositoryPath = repositoryPO.getProtocol().getPrefix() + repositoryPO.getPath();
 
-        return repositoryBaseService.getRepositoryFile(repositoryPath, path);
+//        return repositoryBaseService.getRepositoryFile(repositoryPath, path);
+
+        return null;
     }
 
     /**

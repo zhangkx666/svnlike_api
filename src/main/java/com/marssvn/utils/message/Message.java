@@ -136,6 +136,9 @@ public class Message {
      */
     private String getRealMessage() {
         try {
+            if (this.args == null) {
+                return this.code;
+            }
             return this.messageSource.getMessage(this.code, this.args, LocaleContextHolder.getLocale());
         } catch (NoSuchMessageException e) {
             return this.code;

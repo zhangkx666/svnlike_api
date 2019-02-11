@@ -39,11 +39,6 @@ public class SVNTreeItem extends Entity {
     private String parentPath;
 
     /**
-     * full path
-     */
-//    private String fullPath;
-
-    /**
      * size (file only)
      */
     private long size;

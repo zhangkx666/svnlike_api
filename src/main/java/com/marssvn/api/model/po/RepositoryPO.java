@@ -7,6 +7,9 @@ import lombok.Setter;
 
 import java.util.Date;
 
+/**
+ * @author zhangkx
+ */
 @Getter
 @Setter
 public class RepositoryPO extends BaseBean {

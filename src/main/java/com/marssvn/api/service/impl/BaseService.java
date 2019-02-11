@@ -1,4 +1,4 @@
-package com.marssvn.api.service.business.impl;
+package com.marssvn.api.service.impl;
 
 import com.marssvn.api.model.entity.User;
 import com.marssvn.utils.dao.ICommonDAO;
@@ -7,7 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class BaseService {
+/**
+ * @author zhangkx
+ */
+class BaseService {
+
     /**
      * Common DAO
      */
@@ -30,7 +34,7 @@ public class BaseService {
      */
     User uvo;
 
-    public BaseService() {
+    BaseService() {
         User uvo = new User();
         uvo.setId(1);
         uvo.setName("zhangkx");

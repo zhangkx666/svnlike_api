@@ -41,6 +41,11 @@ public class Repository extends Entity {
     private String path;
 
     /**
+     * domain or IP
+     */
+    private String domain;
+
+    /**
      * description
      */
     private String description;
@@ -59,4 +64,12 @@ public class Repository extends Entity {
      * updated at
      */
     private Date updatedAt;
+
+    /**
+     * get repository url
+     * @return String
+     */
+    public String getUrl() {
+        return this.protocol.getPrefix() + this.domain + "/" + this.name;
+    }
 }

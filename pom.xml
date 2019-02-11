@@ -126,6 +126,12 @@
             <artifactId>annotations</artifactId>
             <version>RELEASE</version>
         </dependency>
+
+        <dependency>
+            <groupId>marssvn.com</groupId>
+            <artifactId>svnapi</artifactId>
+            <version>0.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>

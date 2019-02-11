@@ -7,7 +7,7 @@ import com.marssvn.api.model.dto.repository.request.RepositoryInputDTO;
 import com.marssvn.api.model.dto.repository.request.RepositoryTreeConditionDTO;
 import com.marssvn.api.model.dto.repository.response.RepositoryDTO;
 import com.marssvn.api.model.po.RepositoryPO;
-import com.marssvn.api.service.business.IRepositoryService;
+import com.marssvn.api.service.IRepositoryService;
 import com.marssvn.utils.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
