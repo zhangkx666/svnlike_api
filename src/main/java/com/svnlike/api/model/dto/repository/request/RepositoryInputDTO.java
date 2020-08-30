@@ -33,7 +33,7 @@ public class RepositoryInputDTO extends RequestDTO {
     /**
      * Repository title
      */
-    @Pattern(regexp = "^[a-z0-9]+$", message = "{repository.urlName.notAvailable}")
+    @Pattern(regexp = "^[a-z0-9_-]+$", message = "{repository.urlName.notAvailable}")
     private String urlName;
 
     /**
