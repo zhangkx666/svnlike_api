@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Repository">
-    <resultMap id="BaseResultMap" type="com.marssvn.api.model.po.RepositoryPO">
+    <resultMap id="BaseResultMap" type="com.svnlike.api.model.po.RepositoryPO">
         <id property="id" column="id"/>
         <result property="projectId" column="project_id"/>
         <result property="projectName" column="project_name"/>
@@ -11,41 +11,41 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
-    <insert id="add" keyProperty="id" useGeneratedKeys="true" parameterType="com.marssvn.api.model.entity.Repository">
-        INSERT INTO repository (`project_id`, `user_id`, `title`, `name`, `path`, `description`, `protocol`)
+    <insert id="add" keyProperty="id" useGeneratedKeys="true" parameterType="com.svnlike.api.model.entity.Repository">
+        INSERT INTO repository (project_id, user_id, title, name, path, description, protocol)
             VALUE (#{projectId}, #{userId}, #{title}, #{name}, #{path}, #{description}, #{protocol});
     </insert>
 
-    <update id="updateById" parameterType="com.marssvn.api.model.entity.Repository">
+    <update id="updateById" parameterType="com.svnlike.api.model.entity.Repository">
         UPDATE repository
-        SET `title`       = #{title},
-            `name`        = #{name},
-            `path`        = #{path},
-            `description` = #{description}
-        WHERE `id` = #{id};
+        SET title       = #{title},
+            name        = #{name},
+            path        = #{path},
+            description = #{description}
+        WHERE id = #{id};
     </update>
 
     <delete id="deleteById" parameterType="java.util.HashMap">
         DELETE FROM repository WHERE id = #{id}
     </delete>
 
-    <sql id="/">
+    <sql id="selectRepositoryJoinUserAndProject">
         SELECT
-            rep.`id`,
-            rep.`project_id`,
-            rep.`user_id`,
-            rep.`title`,
-            rep.`name`,
-            rep.`path`,
-            rep.`description`,
-            rep.`protocol`,
-            rep.`created_at`,
-            rep.`updated_at`,
-            project.`name` AS project_name,
-            `user`.`name`  AS user_name
+            rep.id,
+            rep.project_id,
+            rep.user_id,
+            rep.title,
+            rep.name,
+            rep.path,
+            rep.description,
+            rep.protocol,
+            rep.created_at,
+            rep.updated_at,
+            project.name AS project_name,
+            user.name  AS user_name
         FROM repository rep
-        INNER JOIN `user` ON rep.`user_id` = `user`.`id`
-        LEFT JOIN project ON rep.`project_id` = project.`id`
+        INNER JOIN user ON rep.user_id = user.id
+        LEFT JOIN project ON rep.project_id = project.id
     </sql>
 
     <select id="selectOne" parameterType="java.util.HashMap" resultMap="BaseResultMap">
@@ -63,16 +63,16 @@
         <where>
             <if test="keyword != ''">
                 <bind name="keywordLike" value="'%' + _parameter.keyword + '%'"/>
-                rep.`title` LIKE #{keywordLike} OR rep.`name` LIKE #{keywordLike} OR rep.`description` LIKE #{keywordLike}
+                rep.title LIKE #{keywordLike} OR rep.name LIKE #{keywordLike} OR rep.description LIKE #{keywordLike}
             </if>
         </where>
-        ORDER BY rep.`id` DESC
+        ORDER BY rep.id DESC
         LIMIT #{offset}, #{pageSize}
     </select>
 
-    <select id="selectCountByName" parameterType="java.util.HashMap" resultType="java.lang.Integer">
-        SELECT count(1) AS `count`
+    <select id="selectCountByName" parameterType="java.util.HashMap" resultType="java.lang.Long">
+        SELECT count(id) AS count
         FROM repository
-        WHERE `name` = #{name};
+        WHERE name = #{name};
     </select>
 </mapper>

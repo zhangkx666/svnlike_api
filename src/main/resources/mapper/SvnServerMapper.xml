@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.demo.dao.mapper.SvnServerMapper">
-    <resultMap id="BaseResultMap" type="com.marssvn.api.model.entity.SvnServer">
+    <resultMap id="BaseResultMap" type="com.svnlike.api.model.entity.SvnServer">
         <id property="id" column="id"/>
         <result property="sshAccount" column="ssh_account"/>
         <result property="sshPassword" column="ssh_password"/>
@@ -21,12 +21,12 @@
         FROM svn_server WHERE id = #{id}
     </select>
 
-    <insert id="add" keyProperty="id" useGeneratedKeys="true" parameterType="com.marssvn.api.model.entity.SvnServer">
+    <insert id="add" keyProperty="id" useGeneratedKeys="true" parameterType="com.svnlike.api.model.entity.SvnServer">
         INSERT INTO svn_server ("domain", ip, description, ssh_account, ssh_password, is_enabled)
             VALUE (#{domain}, #{ip}, #{description}, #{ssh_account}, #{ssh_password}, #{is_enabled});
     </insert>
 
-    <update id="updateById" parameterType="com.marssvn.api.model.entity.SvnServer">
+    <update id="updateById" parameterType="com.svnlike.api.model.entity.SvnServer">
         UPDATE svn_server
         SET "domain"     = #{domain},
             ip           = #{ip},
@@ -37,7 +37,7 @@
         WHERE id = #{id};
     </update>
 
-    <update id="updateEnabledById" parameterType="com.marssvn.api.model.entity.SvnServer">
+    <update id="updateEnabledById" parameterType="com.svnlike.api.model.entity.SvnServer">
         UPDATE svn_server
         SET is_enabled = #{isEnabled}
         WHERE id = #{id};

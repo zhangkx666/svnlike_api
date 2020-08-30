@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Project">
+
+    <resultMap id="BaseResultMap" type="com.svnlike.api.model.entity.Project">
+        <id property="id" column="id"/>
+        <result property="urlName" column="url_name"/>
+        <result property="avatarColor" column="avatar_color"/>
+        <result property="avatarWord" column="avatar_word"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <insert id="add" keyProperty="id" useGeneratedKeys="true" parameterType="com.svnlike.api.model.entity.Project">
+        INSERT INTO project (name, url_name, description, created_by, owner, visibility)
+        VALUE(#{name}, #{urlName}, #{description}, #{createdBy}, #{owner}, #{visibility});
+    </insert>
+
+    <select id="selectCountByName" parameterType="java.util.HashMap" resultType="java.lang.Long">
+        SELECT count(id) AS count
+        FROM project
+        WHERE name = #{name};
+    </select>
+
+    <select id="selectCountByUrlName" parameterType="java.util.HashMap" resultType="java.lang.Long">
+        SELECT count(id) AS count
+        FROM project
+        WHERE url_name = #{urlName};
+    </select>
+
+    <sql id="selectProject">
+        SELECT
+            p.id,
+            p.name,
+            p.url_name,
+            p.description,
+            p.avatar,
+            p.avatar_word,
+            p.avatar_color,
+            p.owner,
+            p.visibility,
+            p.created_by,
+            p.created_at,
+            p.updated_at
+        FROM project p
+    </sql>
+
+    <select id="selectMany" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+        <include refid="selectProject"/>
+        <where>
+            <if test="keyword != ''">
+                <bind name="keywordLike" value="'%' + _parameter.keyword + '%'"/>
+                p.name LIKE #{keywordLike}
+            </if>
+        </where>
+        ORDER BY
+        <if test="orderBy != ''">
+            ${orderBy},
+        </if>
+        p.id DESC
+        <if test="pageSize > 0">
+            LIMIT #{offset}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="selectOneByUrlName" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+        <include refid="selectProject"/>
+        WHERE p.url_name = #{urlName};
+    </select>
+</mapper>

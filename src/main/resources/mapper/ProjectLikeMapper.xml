@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ProjectLike">
+
+    <resultMap id="BaseResultMap" type="com.svnlike.api.model.entity.ProjectLike">
+        <result property="projectId" column="project_id"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+
+    <insert id="add" parameterType="com.svnlike.api.model.entity.ProjectLike">
+        REPLACE INTO project_like (project_id, user_id) VALUE(#{projectId}, #{userId});
+    </insert>
+
+    <delete id="delete" parameterType="com.svnlike.api.model.entity.ProjectLike">
+        DELETE FROM project_like WHERE project_id = #{projectId} and user_id = #{userId};
+    </delete>
+
+    <select id="selectMany" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        SELECT project_id FROM project_like where user_id = #{userId}
+    </select>
+</mapper>
