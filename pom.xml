@@ -3,13 +3,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>marssvn.com</groupId>
-    <artifactId>marssvn</artifactId>
+    <groupId>svnlike.com</groupId>
+    <artifactId>svnlike</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>api</name>
-    <description>marssvn</description>
+    <description>svnlike</description>
 
     <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-parent -->
     <parent>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
-            <version>1.1.10</version>
+            <version>1.1.23</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-cache -->
@@ -92,11 +92,11 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.tmatesoft.svnkit/svnkit -->
-        <dependency>
-            <groupId>org.tmatesoft.svnkit</groupId>
-            <artifactId>svnkit</artifactId>
-            <version>1.9.3</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.tmatesoft.svnkit</groupId>-->
+            <!--<artifactId>svnkit</artifactId>-->
+            <!--<version>1.9.3</version>-->
+        <!--</dependency>-->
 
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
