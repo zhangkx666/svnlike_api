@@ -75,4 +75,10 @@
         FROM repository
         WHERE name = #{name};
     </select>
+
+    <select id="selectCountByUrlName" parameterType="java.util.HashMap" resultType="java.lang.Long">
+        SELECT count(id) AS count
+        FROM repository
+        WHERE url_name = #{urlName};
+    </select>
 </mapper>
