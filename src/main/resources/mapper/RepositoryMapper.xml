@@ -12,15 +12,14 @@
     </resultMap>
 
     <insert id="add" keyProperty="id" useGeneratedKeys="true" parameterType="com.svnlike.api.model.entity.Repository">
-        INSERT INTO repository (project_id, user_id, title, name, path, description, protocol)
+        INSERT INTO repository (project_id, user_id, url_name, name, path, description, protocol)
             VALUE (#{projectId}, #{userId}, #{title}, #{name}, #{path}, #{description}, #{protocol});
     </insert>
 
     <update id="updateById" parameterType="com.svnlike.api.model.entity.Repository">
         UPDATE repository
-        SET title       = #{title},
-            name        = #{name},
-            path        = #{path},
+        SET name        = #{name},
+            url_name    = #{urlName},
             description = #{description}
         WHERE id = #{id};
     </update>
@@ -34,7 +33,7 @@
             rep.id,
             rep.project_id,
             rep.user_id,
-            rep.title,
+            rep.url_name,
             rep.name,
             rep.path,
             rep.description,

@@ -36,6 +36,6 @@ logging:
   level:
 #    root: debug
     org.apache.coyote.http11.Http11InputBuffer: debug
-    com.marssvn.svnapi.*: debug
+    com.svnlike.svnapi.*: debug
     druid.sql.Statement: debug
 

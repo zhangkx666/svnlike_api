@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     JsonResult svnLikeExceptionHandler(SvnLikeException e) {
         logger.error("SvnLikeException: " + e.getMessage());
-
+        e.printStackTrace();
         return e.toJsonResult();
     }
 

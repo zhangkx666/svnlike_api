@@ -1,8 +1,5 @@
 package com.svnlike.api.service.impl;
 
-import com.marssvn.svnapi.ISvnAdmin;
-import com.marssvn.svnapi.ISvnClient;
-import com.marssvn.svnapi.model.SvnRepository;
 import com.svnlike.api.model.dto.repository.request.RepositoryConditionDTO;
 import com.svnlike.api.model.dto.repository.request.RepositoryInputDTO;
 import com.svnlike.api.model.entity.Repository;
@@ -10,6 +7,9 @@ import com.svnlike.api.model.entity.SVNFile;
 import com.svnlike.api.model.entity.SVNTreeItem;
 import com.svnlike.api.model.po.RepositoryPO;
 import com.svnlike.api.service.IRepositoryService;
+import com.svnlike.svnapi.ISvnAdmin;
+import com.svnlike.svnapi.ISvnClient;
+import com.svnlike.svnapi.model.SvnRepository;
 import com.svnlike.utils.annotation.cache.CacheRemove;
 import com.svnlike.utils.common.StringUtils;
 import com.svnlike.utils.exception.NotFoundException;
@@ -129,9 +129,14 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
             throw new SvnLikeException(m.error("repository.name.duplicate.create", repositoryName));
         }
 
+        // 2. check if url name is exists
+        if (repositoryUrlNameExists(input.getUrlName())) {
+            throw new SvnLikeException(m.error("repository.urlName.duplicate.create", repositoryName));
+        }
+
         // 2. create repository
         SvnRepository svnRepository = new SvnRepository();
-        svnRepository.setName(repositoryName);
+        svnRepository.setName(input.getUrlName());
         svnRepository = svnAdmin.createRepository(svnRepository);
 
         // 3. write repository db data
@@ -334,14 +339,26 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
     }
 
     /**
-     * Verify if the repository name exists
+     * check if the repository name exists
      *
-     * @param repositoryName repository name
+     * @param name repository name
      * @return boolean
      */
-    private boolean repositoryNameExists(String repositoryName) {
+    private boolean repositoryNameExists(String name) {
         HashMap<String, Object> params = new HashMap<>(1);
-        params.put("name", repositoryName);
+        params.put("name", name);
         return commonDAO.checkExists("Repository.selectCountByName", params);
+    }
+
+    /**
+     * check if the repository url name exists
+     *
+     * @param urlName repository name
+     * @return boolean
+     */
+    private boolean repositoryUrlNameExists(String urlName) {
+        HashMap<String, Object> params = new HashMap<>(1);
+        params.put("urlName", urlName);
+        return commonDAO.checkExists("Repository.selectCountByUrlName", params);
     }
 }

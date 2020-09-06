@@ -24,7 +24,7 @@ import java.util.TimeZone;
 @SpringBootApplication(scanBasePackages = {
         "com.svnlike.api",
         "com.svnlike.utils",
-        "com.marssvn.svnapi"
+        "com.svnlike.svnapi"
 })
 public class ApiApplication implements WebMvcConfigurer {
 
