@@ -25,6 +25,11 @@ spring:
     host: 127.0.0.1
     port: 6379
     password: 123456
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 20MB
 
 mybatis:
   mapper-locations: mapper/*Mapper.xml
@@ -39,3 +44,8 @@ logging:
     com.svnlike.svnapi.*: debug
     druid.sql.Statement: debug
 
+file:
+  uploadFolder: D:\workspace\web\svnlike\static
+
+svnlike:
+  encryptAppendString: hk2DKy!*74LHNyUD8gvJxx

@@ -1,6 +1,7 @@
 package com.svnlike.utils.exception;
 
 import com.svnlike.api.model.dto.JsonResult;
+import com.svnlike.svnapi.exception.SvnApiException;
 import com.svnlike.utils.enums.EMessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +39,23 @@ public class GlobalExceptionHandler {
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     JsonResult svnLikeExceptionHandler(SvnLikeException e) {
         logger.error("SvnLikeException: " + e.getMessage());
-        e.printStackTrace();
         return e.toJsonResult();
+    }
+
+    /**
+     * handle SvnApiException
+     *
+     * @param e SvnApiException
+     * @return JsonResult
+     */
+    @ResponseBody
+    @ExceptionHandler(SvnApiException.class)
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    JsonResult svnApiExceptionHandler(SvnApiException e) {
+        logger.error("SvnLikeException: " + e.getMessage());
+        JsonResult jsonResult = new JsonResult(e.getMessage());
+        jsonResult.setType(EMessageType.ERROR);
+        return jsonResult;
     }
 
     /***
@@ -52,7 +68,6 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     JsonResult notFountHandler(NotFoundException e) {
         logger.error("NotFoundException: " + e.getMessage());
-
         return e.toJsonResult();
     }
 
@@ -102,6 +117,23 @@ public class GlobalExceptionHandler {
         logger.error("SQLSyntaxErrorException: " + e.getMessage());
 
         JsonResult jsonResult = new JsonResult(e.getMessage());
+        jsonResult.setType(EMessageType.ERROR);
+        return jsonResult;
+    }
+
+    /**
+     * handle SQLSyntaxErrorException
+     *
+     * @param e SQLSyntaxErrorException
+     * @return JsonResult
+     */
+    @ResponseBody
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+    JsonResult exceptionHandler(Exception e) {
+        logger.error("Exception: " + e.getMessage());
+        e.printStackTrace();
+        JsonResult jsonResult = new JsonResult("500: INTERNAL SERVER ERROR");
         jsonResult.setType(EMessageType.ERROR);
         return jsonResult;
     }

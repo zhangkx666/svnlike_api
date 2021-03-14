@@ -31,6 +31,12 @@ public class RepositoryInputDTO extends RequestDTO {
     private Integer projectId;
 
     /**
+     * project id
+     */
+    @Pattern(regexp = "^[a-z0-9_-]+$", message = "{project.urlName.notAvailable}")
+    private String projectUrlName;
+
+    /**
      * Repository title
      */
     @Pattern(regexp = "^[a-z0-9_-]+$", message = "{repository.urlName.notAvailable}")
@@ -40,6 +46,11 @@ public class RepositoryInputDTO extends RequestDTO {
      * Repository description
      */
     private String description;
+
+    /**
+     * visibility
+     */
+    private Integer visibility;
 
     /**
      * Auto make trunk, branches, tags directory

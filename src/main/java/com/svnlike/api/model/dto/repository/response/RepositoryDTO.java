@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.svnlike.api.model.dto.ResponseDTO;
-import com.svnlike.utils.enums.ESvnProtocol;
+import com.svnlike.svnapi.enums.ESvnProtocol;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,6 +30,11 @@ public class RepositoryDTO extends ResponseDTO {
     private String projectName;
 
     /**
+     * project url name
+     */
+    private String projectUrlName;
+
+    /**
      * user id
      */
     private Integer userId;
@@ -40,24 +45,34 @@ public class RepositoryDTO extends ResponseDTO {
     private String userName;
 
     /**
-     * repository title
-     */
-    private String title;
-
-    /**
      * repository name
      */
     private String name;
 
     /**
-     * repository path
+     * repository url name
      */
-    private String path;
+    private String urlName;
+
+    /**
+     * local path
+     */
+    private String localPath;
+
+    /**
+     * svn url
+     */
+    private String svnUrl;
 
     /**
      * description
      */
     private String description;
+
+    /**
+     * visibility,  1: Authorized by subversion,  2: Website only, 3:Public
+     */
+    private Integer visibility;
 
     /**
      * protocol

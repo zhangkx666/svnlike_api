@@ -1,11 +1,14 @@
 package com.svnlike.api.model.entity;
 
-import com.svnlike.utils.enums.ESvnProtocol;
+import com.svnlike.svnapi.enums.ESvnProtocol;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
 
+/**
+ * @author zhangkx
+ */
 @Getter
 @Setter
 public class Repository extends Entity {
@@ -26,24 +29,24 @@ public class Repository extends Entity {
     private Integer userId;
 
     /**
-     * repository title
-     */
-    private String title;
-
-    /**
      * repository name
      */
     private String name;
 
     /**
-     * repository path
+     * repository url name
      */
-    private String path;
+    private String urlName;
 
     /**
-     * domain or IP
+     * local path
      */
-    private String domain;
+    private String localPath;
+
+    /**
+     * svn url for checkout
+     */
+    private String svnUrl;
 
     /**
      * description
@@ -56,6 +59,11 @@ public class Repository extends Entity {
     private ESvnProtocol protocol;
 
     /**
+     * visibility, 1: Authorized by subversion,  2: Website only, 3:Public
+     */
+    private Integer visibility;
+
+    /**
      * created at
      */
     private Date createdAt;
@@ -64,16 +72,4 @@ public class Repository extends Entity {
      * updated at
      */
     private Date updatedAt;
-
-    /**
-     * get repository url
-     * @return String
-     */
-    public String getUrl() {
-        if (ESvnProtocol.FILE == this.protocol) {
-            return this.protocol.getPrefix() + this.path;
-        } else {
-            return this.protocol.getPrefix() + this.domain + "/" + this.name;
-        }
-    }
 }

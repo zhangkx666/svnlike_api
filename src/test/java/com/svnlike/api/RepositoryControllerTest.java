@@ -21,56 +21,56 @@ public class RepositoryControllerTest extends BaseApplicationTest {
      */
     private static int repositoryId;
 
-    @Test
-    public void test01_createRepository() {
-        // params
-        LinkedHashMap<String, Object> params = new LinkedHashMap<>();
-        params.put("projectId", 1);
-        params.put("title", "marssvn.com");
-        params.put("name", "marssvn");
-        params.put("description", "a svn repository for marssvn.com");
-        params.put("autoMakeDir", true);
-
-        HttpEntity<LinkedHashMap> jsonEntity = this.getJsonHttpEntity(params);
-        LinkedHashMap result =
-                testRestTemplate.postForObject("/repository", jsonEntity, LinkedHashMap.class);
-        repositoryId = ((int) ((LinkedHashMap) result.get("data")).get("id"));
-        Assert.isTrue(result.get("status").equals(1), "failed to create repository");
-    }
-
-    @Test
-    public void test02_createRepositoryFailed() {
-        // params
-        LinkedHashMap<String, Object> params = new LinkedHashMap<>();
-        params.put("projectId", 1);
-        params.put("title", "marssvn.com");
-        params.put("name", "marssvn");
-        params.put("description", "a svn repository for marssvn.com");
-        params.put("autoMakeDir", true);
-
-        HttpEntity<LinkedHashMap> jsonEntity = this.getJsonHttpEntity(params);
-        LinkedHashMap result =
-                testRestTemplate.postForObject("/repository", jsonEntity, LinkedHashMap.class);
-        Assert.isTrue(result.get("status").equals(0), "repository created successfully");
-    }
-
-    @Test
-    public void test03_getRepositoryList() {
-        LinkedHashMap result =
-                this.testRestTemplate.getForObject("/repository", LinkedHashMap.class);
-
-        // status check
-        Assert.isTrue(result.get("status").equals(1), "status is not 1:success");
-
-        // data list
-        ArrayList<LinkedHashMap> dataList = (ArrayList<LinkedHashMap>) result.get("data");
-        Assert.notEmpty(dataList, "repository list is empty");
-
-        // data
-        LinkedHashMap data = dataList.get(0);
-        Assert.isTrue(result.get("status").equals(1), "failed to get repository list");
-        Assert.isTrue("marssvn".equals(data.get("projectName")), "project name not right");
-    }
+//    @Test
+//    public void test01_createRepository() {
+//        // params
+//        LinkedHashMap<String, Object> params = new LinkedHashMap<>();
+//        params.put("projectId", 1);
+//        params.put("title", "marssvn.com");
+//        params.put("name", "marssvn");
+//        params.put("description", "a svn repository for marssvn.com");
+//        params.put("autoMakeDir", true);
+//
+//        HttpEntity<LinkedHashMap> jsonEntity = this.getJsonHttpEntity(params);
+//        LinkedHashMap result =
+//                testRestTemplate.postForObject("/repository", jsonEntity, LinkedHashMap.class);
+//        repositoryId = ((int) ((LinkedHashMap) result.get("data")).get("id"));
+//        Assert.isTrue(result.get("status").equals(1), "failed to create repository");
+//    }
+//
+//    @Test
+//    public void test02_createRepositoryFailed() {
+//        // params
+//        LinkedHashMap<String, Object> params = new LinkedHashMap<>();
+//        params.put("projectId", 1);
+//        params.put("title", "marssvn.com");
+//        params.put("name", "marssvn");
+//        params.put("description", "a svn repository for marssvn.com");
+//        params.put("autoMakeDir", true);
+//
+//        HttpEntity<LinkedHashMap> jsonEntity = this.getJsonHttpEntity(params);
+//        LinkedHashMap result =
+//                testRestTemplate.postForObject("/repository", jsonEntity, LinkedHashMap.class);
+//        Assert.isTrue(result.get("status").equals(0), "repository created successfully");
+//    }
+//
+//    @Test
+//    public void test03_getRepositoryList() {
+//        LinkedHashMap result =
+//                this.testRestTemplate.getForObject("/repository", LinkedHashMap.class);
+//
+//        // status check
+//        Assert.isTrue(result.get("status").equals(1), "status is not 1:success");
+//
+//        // data list
+//        ArrayList<LinkedHashMap> dataList = (ArrayList<LinkedHashMap>) result.get("data");
+//        Assert.notEmpty(dataList, "repository list is empty");
+//
+//        // data
+//        LinkedHashMap data = dataList.get(0);
+//        Assert.isTrue(result.get("status").equals(1), "failed to get repository list");
+//        Assert.isTrue("marssvn".equals(data.get("projectName")), "project name not right");
+//    }
 
 //    @Test
 //    public void test04_getRepositoryById() {

@@ -6,14 +6,20 @@ import com.svnlike.api.model.dto.project.request.ProjectConditionDTO;
 import com.svnlike.api.model.dto.project.request.ProjectInputDTO;
 import com.svnlike.api.model.dto.project.response.ProjectForSelectListOutputDTO;
 import com.svnlike.api.model.dto.project.response.ProjectOutputDTO;
+import com.svnlike.api.model.dto.repository.request.RepositoryInputDTO;
+import com.svnlike.api.model.dto.repository.response.RepositoryDTO;
 import com.svnlike.api.model.entity.Project;
+import com.svnlike.api.model.entity.Repository;
+import com.svnlike.api.model.po.RepositoryPO;
 import com.svnlike.api.service.IProjectService;
+import com.svnlike.api.service.IRepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * project controller
@@ -25,10 +31,12 @@ import java.util.List;
 public class ProjectController extends BaseController {
 
     private final IProjectService projectService;
+    private final IRepositoryService repositoryService;
 
     @Autowired
-    public ProjectController(IProjectService projectService) {
+    public ProjectController(IProjectService projectService, IRepositoryService repositoryService) {
         this.projectService = projectService;
+        this.repositoryService = repositoryService;
     }
 
     /**
@@ -39,18 +47,16 @@ public class ProjectController extends BaseController {
     @RequestMapping(method = RequestMethod.GET)
     public List<ResponseDTO> index(ProjectConditionDTO condition) {
         List<Project> projectList = projectService.getProjectList(condition);
-
         List<ResponseDTO> outputList = new ArrayList<>();
 
         // if for select list, just return id, urlName, visibility
         if (condition.isForSelect()) {
             projectList.forEach(item -> outputList.add(item.convertTo(ProjectForSelectListOutputDTO.class)));
-            return outputList;
 
         } else {
             projectList.forEach(item -> outputList.add(item.convertTo(ProjectOutputDTO.class)));
-            return outputList;
         }
+        return outputList;
     }
 
     /**
@@ -68,13 +74,25 @@ public class ProjectController extends BaseController {
     }
 
     /**
+     * Create project
+     *
+     * @return JsonResult
+     */
+    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+    public JsonResult update(@PathVariable("id") int id,
+                             @Valid @RequestBody ProjectInputDTO input) {
+        projectService.updateProjectById(id, input);
+        return new JsonResult(m.success("project.update.success"));
+    }
+
+    /**
      * Get project by project url name
      *
      * @param urlName project name
      * @return JsonResult
      */
     @RequestMapping(method = RequestMethod.GET, value = "/{urlName}")
-    public ProjectOutputDTO show(@PathVariable(value = "urlName") String urlName) throws InterruptedException {
+    public ProjectOutputDTO show(@PathVariable(value = "urlName") String urlName) {
         Project project = projectService.getProjectByUrlName(urlName);
         return project.convertTo(ProjectOutputDTO.class);
     }
@@ -112,7 +130,23 @@ public class ProjectController extends BaseController {
      * @return JsonResult
      */
     @RequestMapping(method = RequestMethod.GET, value = "/likedIds")
-    public List<Integer> index() {
+    public List<Integer> likedIds() {
         return projectService.getProjectLikeList();
+    }
+
+    /**
+     * repositories of project
+     * get project/:id/repository
+     *
+     * @param projectId project id
+     * @return JsonResult
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/{projectId}/repository")
+    public List<RepositoryDTO> repository(@PathVariable("projectId") Integer projectId) {
+        List<RepositoryPO> repositoryPOList = repositoryService.getRepositoryListByProjectId(projectId);
+        List<RepositoryDTO> repositoryDTOList = new ArrayList<>();
+        repositoryPOList.forEach(item -> repositoryDTOList.add(item.convertTo(RepositoryDTO.class)));
+
+        return repositoryDTOList;
     }
 }

@@ -17,6 +17,18 @@
         VALUE(#{name}, #{urlName}, #{description}, #{createdBy}, #{owner}, #{visibility});
     </insert>
 
+    <update id="updateById" parameterType="com.svnlike.api.model.entity.Project">
+        UPDATE project
+        SET name        = #{name},
+            url_name    = #{urlName},
+            description = #{description},
+            avatar = #{avatar},
+            avatar_word = #{avatarWord},
+            avatar_color = #{avatarColor},
+            visibility = #{visibility}
+        WHERE id = #{id};
+    </update>
+
     <select id="selectCountByName" parameterType="java.util.HashMap" resultType="java.lang.Long">
         SELECT count(id) AS count
         FROM project
@@ -62,6 +74,11 @@
         <if test="pageSize > 0">
             LIMIT #{offset}, #{pageSize}
         </if>
+    </select>
+
+    <select id="selectOne" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+        <include refid="selectProject"/>
+        WHERE p.id = #{id};
     </select>
 
     <select id="selectOneByUrlName" parameterType="java.util.HashMap" resultMap="BaseResultMap">

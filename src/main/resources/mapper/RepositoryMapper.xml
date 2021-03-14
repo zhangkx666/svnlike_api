@@ -4,16 +4,19 @@
     <resultMap id="BaseResultMap" type="com.svnlike.api.model.po.RepositoryPO">
         <id property="id" column="id"/>
         <result property="projectId" column="project_id"/>
-        <result property="projectName" column="project_name"/>
         <result property="userId" column="user_id"/>
-        <result property="userName" column="user_name"/>
+        <result property="urlName" column="url_name"/>
+        <result property="projectName" column="project_name"/>
+        <result property="projectUrlName" column="project_url_name"/>
+        <result property="localPath" column="local_path"/>
+        <result property="svnUrl" column="svn_url"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
     <insert id="add" keyProperty="id" useGeneratedKeys="true" parameterType="com.svnlike.api.model.entity.Repository">
-        INSERT INTO repository (project_id, user_id, url_name, name, path, description, protocol)
-            VALUE (#{projectId}, #{userId}, #{title}, #{name}, #{path}, #{description}, #{protocol});
+        INSERT INTO repository (project_id, user_id, name, url_name, local_path, svn_url, description, protocol, visibility)
+            VALUE (#{projectId}, #{userId}, #{name}, #{urlName}, #{localPath}, #{svnUrl}, #{description}, #{protocol}, #{visibility});
     </insert>
 
     <update id="updateById" parameterType="com.svnlike.api.model.entity.Repository">
@@ -29,22 +32,22 @@
     </delete>
 
     <sql id="selectRepositoryJoinUserAndProject">
-        SELECT
-            rep.id,
-            rep.project_id,
-            rep.user_id,
-            rep.url_name,
-            rep.name,
-            rep.path,
-            rep.description,
-            rep.protocol,
-            rep.created_at,
-            rep.updated_at,
-            project.name AS project_name,
-            user.name  AS user_name
+        SELECT rep.id,
+               rep.project_id,
+               rep.user_id,
+               rep.name,
+               rep.url_name,
+               rep.local_path,
+               rep.svn_url,
+               rep.description,
+               rep.protocol,
+               rep.visibility,
+               rep.created_at,
+               rep.updated_at,
+               p.name AS project_name,
+               p.url_name AS project_url_name
         FROM repository rep
-        INNER JOIN user ON rep.user_id = user.id
-        LEFT JOIN project ON rep.project_id = project.id
+        INNER JOIN project p ON rep.project_id = p.id
     </sql>
 
     <select id="selectOne" parameterType="java.util.HashMap" resultMap="BaseResultMap">
@@ -52,21 +55,26 @@
         WHERE rep.id = #{id};
     </select>
 
-    <select id="selectOneByName" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+    <select id="selectOneByUrlName" parameterType="java.util.HashMap" resultMap="BaseResultMap">
         <include refid="selectRepositoryJoinUserAndProject"/>
-        WHERE rep.name = #{name};
+        WHERE p.url_name = #{projectUrlName} and rep.url_name = #{repositoryUrlName};
     </select>
 
     <select id="selectMany" parameterType="java.util.HashMap" resultMap="BaseResultMap">
         <include refid="selectRepositoryJoinUserAndProject"/>
         <where>
-            <if test="keyword != ''">
+            <if test="keyword != null and keyword != ''">
                 <bind name="keywordLike" value="'%' + _parameter.keyword + '%'"/>
-                rep.title LIKE #{keywordLike} OR rep.name LIKE #{keywordLike} OR rep.description LIKE #{keywordLike}
+                rep.url_name LIKE #{keywordLike} OR rep.name LIKE #{keywordLike} OR rep.description LIKE #{keywordLike}
+            </if>
+            <if test="projectId != null and projectId != ''">
+                rep.project_id = #{projectId}
             </if>
         </where>
         ORDER BY rep.id DESC
-        LIMIT #{offset}, #{pageSize}
+        <if test="offset != null and offset != ''">
+            LIMIT #{offset}, #{pageSize}
+        </if>
     </select>
 
     <select id="selectCountByName" parameterType="java.util.HashMap" resultType="java.lang.Long">

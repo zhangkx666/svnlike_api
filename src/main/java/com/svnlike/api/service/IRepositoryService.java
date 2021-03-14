@@ -2,6 +2,7 @@ package com.svnlike.api.service;
 
 import com.svnlike.api.model.dto.repository.request.RepositoryConditionDTO;
 import com.svnlike.api.model.dto.repository.request.RepositoryInputDTO;
+import com.svnlike.api.model.entity.Repository;
 import com.svnlike.api.model.entity.SVNFile;
 import com.svnlike.api.model.entity.SVNTreeItem;
 import com.svnlike.api.model.po.RepositoryPO;
@@ -26,6 +27,14 @@ public interface IRepositoryService {
     List<RepositoryPO> getRepositoryList(RepositoryConditionDTO input);
 
     /**
+     * Get repository list by project id
+     *
+     * @param projectId project id
+     * @return List
+     */
+    List<RepositoryPO> getRepositoryListByProjectId(Integer projectId);
+
+    /**
      * Get repository by id
      *
      * @param id repositoryId
@@ -34,12 +43,13 @@ public interface IRepositoryService {
     RepositoryPO getRepositoryById(int id);
 
     /**
-     * Get repository by name
+     * Get repository by url name
      *
-     * @param name repository name
+     * @param projectUrlName project url name
+     * @param repositoryUrlName repository url name
      * @return Repository
      */
-    RepositoryPO getRepositoryByName(String name);
+    RepositoryPO getRepositoryByUrlName(String projectUrlName, String repositoryUrlName);
 
     /**
      * Create repository
@@ -82,7 +92,7 @@ public interface IRepositoryService {
      * @param getALl         get all children
      * @return SVNTreeItem
      */
-    SVNTreeItem getRepositoryTreeByName(String repositoryName, String path, Boolean getALl);
+    SVNTreeItem getRepositoryTreeByName(String repositoryName, String path, Boolean getAll);
 
     /**
      * get file message
@@ -91,4 +101,6 @@ public interface IRepositoryService {
      * @return string file message
      */
     SVNFile getRepositoryFile(String repositoryName, String path);
+
+
 }

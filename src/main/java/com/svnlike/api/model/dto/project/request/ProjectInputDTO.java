@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 
+/**
+ * @author zhangkx
+ */
 @Getter
 @Setter
 public class ProjectInputDTO extends RequestDTO {
@@ -31,4 +34,19 @@ public class ProjectInputDTO extends RequestDTO {
      * project visibility, 1: public,  2: private
      */
     private Integer visibility;
+
+    /**
+     * avatar
+     */
+    private String avatar;
+
+    /**
+     * avatar word
+     */
+    private String avatarWord;
+
+    /**
+     * avatar
+     */
+    private String avatarColor;
 }

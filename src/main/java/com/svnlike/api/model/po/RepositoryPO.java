@@ -1,6 +1,6 @@
 package com.svnlike.api.model.po;
 
-import com.svnlike.utils.enums.ESvnProtocol;
+import com.svnlike.svnapi.enums.ESvnProtocol;
 import com.svnlike.api.model.BaseBean;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +30,11 @@ public class RepositoryPO extends BaseBean {
     private String projectName;
 
     /**
+     * project url name
+     */
+    private String projectUrlName;
+
+    /**
      * user id
      */
     private Integer userId;
@@ -40,24 +45,34 @@ public class RepositoryPO extends BaseBean {
     private String userName;
 
     /**
-     * repository title
-     */
-    private String title;
-
-    /**
      * repository name
      */
     private String name;
 
     /**
-     * repository path
+     * repository url name
      */
-    private String path;
+    private String urlName;
+
+    /**
+     * repository local path
+     */
+    private String localPath;
+
+    /**
+     * repository svn url
+     */
+    private String svnUrl;
 
     /**
      * description
      */
     private String description;
+
+    /**
+     * visibility,  1: Authorized by subversion,  2: Website only, 3:Public
+     */
+    private Integer visibility;
 
     /**
      * protocol

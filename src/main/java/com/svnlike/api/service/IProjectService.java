@@ -3,6 +3,7 @@ package com.svnlike.api.service;
 import com.svnlike.api.model.dto.project.request.ProjectConditionDTO;
 import com.svnlike.api.model.dto.project.request.ProjectInputDTO;
 import com.svnlike.api.model.entity.Project;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,6 +29,14 @@ public interface IProjectService {
     Project createProject(ProjectInputDTO input);
 
     /**
+     * update project by id
+     *
+     * @param id    project id
+     * @param input ProjectInputDTO
+     */
+    void updateProjectById(int id, ProjectInputDTO input);
+
+    /**
      * like a project
      *
      * @param projectId project id
@@ -50,8 +59,17 @@ public interface IProjectService {
 
     /**
      * get project by url name
+     *
      * @param urlName the url name of project
      * @return project
      */
     Project getProjectByUrlName(String urlName);
+
+    /**
+     * check if the project name exists
+     *
+     * @param urlName project url name
+     * @return boolean
+     */
+    boolean projectUrlNameExists(String urlName);
 }

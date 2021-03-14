@@ -21,6 +21,7 @@ import java.util.List;
 
 /**
  * repository controller
+ *
  * @author zhangkx
  */
 @RestController
@@ -53,12 +54,14 @@ public class RepositoryController extends BaseController {
     /**
      * Get repository by repository name
      *
-     * @param name repository name
+     * @param projectUrlName    project name
+     * @param repositoryUrlName repository name
      * @return JsonResult
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/{name}")
-    public RepositoryPO show(@PathVariable(value = "name") String name) {
-        return repositoryService.getRepositoryByName(name);
+    @RequestMapping(method = RequestMethod.GET, value = "/{projectUrlName}/{repositoryUrlName}")
+    public RepositoryPO show(@PathVariable(value = "projectUrlName") String projectUrlName,
+                             @PathVariable(value = "repositoryUrlName") String repositoryUrlName) {
+        return repositoryService.getRepositoryByUrlName(projectUrlName, repositoryUrlName);
     }
 
     /**
@@ -74,6 +77,7 @@ public class RepositoryController extends BaseController {
 
     /**
      * get file
+     *
      * @param name  repository name
      * @param input RepositoryFileDTO
      * @return JsonResult
