@@ -1,6 +1,6 @@
 package com.svnlike.api.model.dto;
 
-import com.svnlike.api.model.BaseBean;
+import com.svnlike.utils.model.BaseBean;
 
 public class RequestDTO extends BaseBean {
 

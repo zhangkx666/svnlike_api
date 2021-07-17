@@ -1,21 +1,25 @@
-package com.svnlike.api.model.entity;
+package com.svnlike.api.model.dto.repository.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.svnlike.svnapi.model.SvnLock;
+import com.svnlike.utils.model.BaseBean;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
-import java.util.List;
 
+/**
+ * @author zhangkx
+ */
 @Getter
 @Setter
-public class SVNTreeItem extends Entity {
+public class SvnTreeDto extends BaseBean {
 
     /**
-     * type
+     * kind
      */
-    private String type = "dir";
+    private String kind = "dir";
 
     /**
      * name
@@ -29,16 +33,6 @@ public class SVNTreeItem extends Entity {
     private String extension;
 
     /**
-     * path
-     */
-    private String path;
-
-    /**
-     * parent path
-     */
-    private String parentPath;
-
-    /**
      * size (file only)
      */
     private long size;
@@ -47,32 +41,22 @@ public class SVNTreeItem extends Entity {
      * revision
      */
     @JsonProperty("rev")
-    private long revision;
+    private long commitRevision;
 
     /**
      * author
      */
-    private String author;
+    @JsonProperty("author")
+    private String commitAuthor;
 
     /**
      * date
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updatedAt;
-
-    /**
-     * commit message
-     */
-    @JsonProperty("msg")
-    private String commitMessage;
+    private Date commitDate;
 
     /**
      * lockOwner (file only)
      */
-    private SVNLockInfo lock;
-
-    /**
-     * sub directories (directory only)
-     */
-    private List<SVNTreeItem> children;
+    private SvnLock lock;
 }

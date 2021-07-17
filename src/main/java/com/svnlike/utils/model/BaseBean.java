@@ -1,4 +1,4 @@
-package com.svnlike.api.model;
+package com.svnlike.utils.model;
 
 import org.springframework.beans.BeanUtils;
 

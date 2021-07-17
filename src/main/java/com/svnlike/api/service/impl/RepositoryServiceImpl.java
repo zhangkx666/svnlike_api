@@ -3,13 +3,13 @@ package com.svnlike.api.service.impl;
 import com.svnlike.api.model.dto.repository.request.RepositoryConditionDTO;
 import com.svnlike.api.model.dto.repository.request.RepositoryInputDTO;
 import com.svnlike.api.model.entity.Repository;
-import com.svnlike.api.model.entity.SVNFile;
-import com.svnlike.api.model.entity.SVNTreeItem;
+import com.svnlike.api.model.dto.repository.response.SvnFileDto;
 import com.svnlike.api.model.po.RepositoryPO;
 import com.svnlike.api.service.IProjectService;
 import com.svnlike.api.service.IRepositoryService;
 import com.svnlike.svnapi.ISvnAdmin;
 import com.svnlike.svnapi.ISvnClient;
+import com.svnlike.svnapi.model.SvnEntry;
 import com.svnlike.svnapi.model.SvnRepository;
 import com.svnlike.utils.annotation.cache.CacheRemove;
 import com.svnlike.utils.common.StringUtils;
@@ -114,7 +114,7 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
     /**
      * Get repository by url name
      *
-     * @param projectUrlName project url name
+     * @param projectUrlName    project url name
      * @param repositoryUrlName repository url name
      * @return Repository
      */
@@ -152,12 +152,12 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
         }
 
         // 2. repository exists check
-        if (repositoryNameExists(input.getName())) {
+        if (repositoryNameExists(input.getProjectId(), input.getName())) {
             throw new SvnLikeException(m.error("repository.name.duplicate.create", input.getName()));
         }
 
         // 3. check if url name is exists
-        if (repositoryUrlNameExists(input.getUrlName())) {
+        if (repositoryUrlNameExists(input.getProjectId(), input.getUrlName())) {
             throw new SvnLikeException(m.error("repository.urlName.duplicate.create", input.getUrlName()));
         }
 
@@ -187,7 +187,7 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
         // name, urlName, projectId, description, visibility
         repository.copyPropertiesFrom(input);
         repository.setUserId(uvo.getId());
-        repository.setLocalPath(svnRepository.getRepoRootPath());
+        repository.setLocalPath(StringUtils.windowsPath2LinuxPath(svnRepository.getRepoRootPath()));
         repository.setProtocol(SVN);
         commonDAO.execute("Repository.add", repository);
     }
@@ -217,7 +217,7 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
         if (StringUtils.isNotBlank(newRepositoryName) && !newRepositoryName.equals(repository.getName())) {
 
             // new repository name
-            if (repositoryNameExists(newRepositoryName)) {
+            if (repositoryNameExists(input.getProjectId(), newRepositoryName)) {
                 throw new SvnLikeException(m.error("repository.name.duplicate.update", newRepositoryName));
             }
 
@@ -273,87 +273,255 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
     }
 
     /**
-     * Get repository tree
+     * get repository tree
      *
-     * @param id     repositoryId
-     * @param path   repository path
-     * @param getAll get all children
+     * @param repositoryId repository id
+     * @param path         repository path
      * @return SVNTreeItem
      */
     @Override
-    @Cacheable(value = "repository.tree", key = "'id=' + #id + ',path=' + #path + ',getAll=' + #getALl")
-    public SVNTreeItem getRepositoryTreeById(int id, String path, Boolean getAll) {
+    @Cacheable(value = "repository.tree", key = "'id=' + #repositoryId + ',path=' + #path")
+    public List<SvnEntry> getRepositoryTree(Integer repositoryId, String path) {
 
         // query repository
-        RepositoryPO repositoryPO = this.getRepositoryById(id);
-        if (repositoryPO == null) {
-            throw new SvnLikeException(m.error("repository.not_exists", String.valueOf(id)));
+        RepositoryPO repository = this.getRepositoryById(repositoryId);
+        if (repository == null) {
+            throw new SvnLikeException(m.error("repository.not_exists", String.valueOf(repositoryId)));
         }
 
         // get repository tree
-        String repositoryPath = repositoryPO.getProtocol().getPrefix() + repositoryPO.getLocalPath();
+        String repositoryPath = repository.getProtocol().getPrefix() + repository.getLocalPath();
+        if (StringUtils.isNotBlank(repository.getLocalPath())) {
+            this.svnClient.setRootPath("file://" + repository.getLocalPath());
+        } else if (StringUtils.isNotBlank(repository.getSvnUrl())) {
+            this.svnClient.setRootPath(repository.getSvnUrl());
+        } else {
+            throw new SvnLikeException(m.error("repository.unknown_root_path"));
+        }
 
-        return null;
-    }
-
-    /**
-     * get repository tree by name
-     *
-     * @param repositoryName repository name
-     * @param path           repository path
-     * @param getAll         get all children
-     * @return SVNTreeItem
-     */
-    @Override
-    @Cacheable(value = "repository.tree", key = "'name=' + #repositoryName + ',path=' + #path + ',getAll=' + #getAll")
-    public SVNTreeItem getRepositoryTreeByName(String repositoryName, String path, Boolean getAll) {
-
-//        // query repository
-//        RepositoryPO repositoryPO = this.getRepositoryByName(repositoryName);
-//        if (repositoryPO == null) {
-//            throw new SvnLikeException(m.error("repository.name_not_exists", repositoryName));
-//        }
-//
-//        // get repository tree
-//        String repositoryPath = repositoryPO.getProtocol().getPrefix() + repositoryPO.getPath();
-//
-//        return this.getRepositoryTree(repositoryPath, repositoryPO.getName(), path, getALl);
-
-        return null;
+        return this.svnClient.list(path);
     }
 
     /**
      * get file message
      *
-     * @param repositoryName repository name
-     * @param path           path
+     * @param repositoryId repository id
+     * @param path         path
      * @return string file message
      */
     @Override
-    @Cacheable(value = "repository.file", key = "'name=' + #repositoryName + ',path=' + #path")
-    public SVNFile getRepositoryFile(String repositoryName, String path) {
+    @Cacheable(value = "repository.file", key = "'id=' + #repositoryId + ',path=' + #path")
+    public SvnFileDto getRepositoryFile(Integer repositoryId, String path) {
         // query repository
-        RepositoryPO repositoryPO = this.getRepositoryByUrlName(repositoryName, repositoryName);
-        if (repositoryPO == null) {
-            throw new SvnLikeException(m.error("repository.name_not_exists", repositoryName));
+        RepositoryPO repository = this.getRepositoryById(repositoryId);
+        if (repository == null) {
+            throw new SvnLikeException(m.error("repository.not_exists", String.valueOf(repositoryId)));
         }
 
-        // get repository tree
-        String repositoryPath = repositoryPO.getProtocol().getPrefix() + repositoryPO.getLocalPath();
+        if (StringUtils.isNotBlank(repository.getLocalPath())) {
+            this.svnClient.setRootPath("file://" + repository.getLocalPath());
+        } else if (StringUtils.isNotBlank(repository.getSvnUrl())) {
+            this.svnClient.setRootPath(repository.getSvnUrl());
+        } else {
+            throw new SvnLikeException(m.error("repository.unknown_root_path"));
+        }
 
-//        return repositoryBaseService.getRepositoryFile(repositoryPath, path);
+        SvnFileDto svnFileDto = new SvnFileDto();
+        svnFileDto.setName("readme.md");
+        svnFileDto.setContent("> markdown是一种可以使用普通文本编辑器编写的标记语言，通过简单的标记语法，它可以使普通文本内容具有一定的格式。\n" +
+                "\n" +
+                "### 标题\n" +
+                "---\n" +
+                "\n" +
+                "# 一级标题\n" +
+                "## 二级标题\n" +
+                "### 三级标题\n" +
+                "#### 四级标题\n" +
+                "##### 五级标题\n" +
+                "###### 六级标题\n" +
+                "\n" +
+                "```lang-markdown\n" +
+                "# 一级标题\n" +
+                "## 二级标题\n" +
+                "### 三级标题\n" +
+                "#### 四级标题\n" +
+                "##### 五级标题\n" +
+                "###### 六级标题\n" +
+                "```\n" +
+                "\n" +
+                "### 样式 [^批注：样式]\n" +
+                "**粗体**  *斜体* ***粗斜体*** ~~删除线~~ <sup>上标</sup> <sub>下标</sub>  <b class='red'>红色</b> <b class='blue'>蓝色</b> <b " +
+                "class='green'>绿色</b> \n" +
+                "\n" +
+                "```lang-markdown\n" +
+                "**粗体**  *斜体* ***粗斜体*** ~~删除线~~ <sup>上标</sup> <sub>下标</sub>  <b class='red'>红色</b> <b class='blue'>蓝色</b> <b " +
+                "class='green'>绿色</b> \n" +
+                "```\n" +
+                "\n" +
+                "### 分割线 \n" +
+                "***\n" +
+                "***\n" +
+                "\n" +
+                "```lang-markdown\n" +
+                "---\n" +
+                "***\n" +
+                "```\n" +
+                "\n" +
+                "### 引用内容 [^批注：引用内容]\n" +
+                "---\n" +
+                "> 后台地址： /admin。 使用markdown书写，支持标准markdown语法，并扩展了表情，代码高亮。封装的markdown编辑器支持 " +
+                "表情，图片（上传），链接，代码，全屏，预览等功能。响应式布局，不管是前端还是后台，自动适配各种尺寸的屏幕。\n" +
+                "\n" +
+                "\n" +
+                "```lang-markdown\n" +
+                "> 后台地址： /admin。 使用markdown书写，支持标准markdown语法，并扩展了表情，代码高亮。封装的markdown编辑器支持 " +
+                "表情，图片（上传），链接，代码，全屏，预览等功能。响应式布局，不管是前端还是后台，自动适配各种尺寸的屏幕。\n" +
+                "```\n" +
+                "\n" +
+                "### 厉害了我的列表\n" +
+                "---\n" +
+                "无序列表 @[微笑]\n" +
+                " * 项目1\n" +
+                " - 项目2\n" +
+                "\n" +
+                "```lang-markdown\n" +
+                " * 项目1\n" +
+                " - 项目2\n" +
+                "```\n" +
+                "\n" +
+                "---\n" +
+                "有序列表\n" +
+                " 1. 项目1\n" +
+                " 2. 项目2\n" +
+                "\n" +
+                "```lang-markdown\n" +
+                " 1. 项目1\n" +
+                " 2. 项目2\n" +
+                "```\n" +
+                "\n" +
+                "---\n" +
+                "嵌套\n" +
+                " * 项目1\n" +
+                "   1. 嵌套1\n" +
+                "   2. 嵌套2\n" +
+                "\n" +
+                "```lang-markdown\n" +
+                " * 项目1\n" +
+                "   1. 嵌套1\n" +
+                "   2. 嵌套2\n" +
+                "```\n" +
+                "\n" +
+                "---\n" +
+                "checklist\n" +
+                "- [x] 项目1\n" +
+                "- [x] 项目2\n" +
+                " - [x] 项目3\n" +
+                " - [x] 项目4\n" +
+                " - [ ]  空\n" +
+                "  - [x] 项目6\n" +
+                "- [ ]   空\n" +
+                "- [x] 项目8\n" +
+                "\n" +
+                "\n" +
+                "```lang-markdown\n" +
+                "- [x] 项目1\n" +
+                "- [x] 项目2\n" +
+                " - [x] 项目3\n" +
+                " - [x] 项目4\n" +
+                " - [ ]  空\n" +
+                "  - [x] 项目6\n" +
+                "- [ ]   空\n" +
+                "- [x] 项目8\n" +
+                "```\n" +
+                "\n" +
+                "\n" +
+                "---\n" +
+                "在引用中使用列表\n" +
+                "> * 引用列表\n" +
+                ">  * 项目1\n" +
+                ">  * 项目2 \n" +
+                "\n" +
+                "```lang-markdown\n" +
+                "> * 引用列表\n" +
+                ">  * 项目1\n" +
+                ">  * 项目2 \n" +
+                "```\n" +
+                "\n" +
+                "### 表情\n" +
+                "---\n" +
+                "@[微笑]@[嘻嘻]@[哈哈]@[可爱]@[可怜]@[挖鼻]@[吃惊]@[害羞]\n" +
+                "\n" +
+                "```lang-markdown\n" +
+                "@[微笑]@[嘻嘻]@[哈哈]@[可爱]@[可怜]@[挖鼻]@[吃惊]@[害羞]\n" +
+                "```\n" +
+                "\n" +
+                "### 链接\n" +
+                "---\n" +
+                "http://miao.blog\n" +
+                "[MIAO.BLOG](http://miao.blog)\n" +
+                "[邮件](mailto:xoxo@ooxx.me)\n" +
+                "\n" +
+                "```lang-markdown\n" +
+                "http://miao.blog\n" +
+                "[MIAO.BLOG](http://miao.blog)\n" +
+                "[邮件](mailto:xoxo@ooxx.me)\n" +
+                "```\n" +
+                "\n" +
+                "\n" +
+                "### 图片\n" +
+                "---\n" +
+                "![MIAO](/images/10a8ec7ad56e4dc7.png)\n" +
+                "\n" +
+                "```lang-markdown\n" +
+                "![MIAO](/images/10a8ec7ad56e4dc7.png)\n" +
+                "```\n" +
+                "\n" +
+                "\n" +
+                "### 代码\n" +
+                "---\n" +
+                "通过添加 `lang-***` 可以设置代码高亮 `lang-css` `lang-js` `lang-html`\n" +
+                "```lang-css\n" +
+                "@media print{\n" +
+                "    .no-print{\n" +
+                "        display: none;\n" +
+                "        height: 0;\n" +
+                "    }\n" +
+                "    a:after {\n" +
+                "        content: \"\" !important;\n" +
+                "    }\n" +
+                "}\n" +
+                "```\n" +
+                "\n" +
+                "### 表格\n" +
+                "---\n" +
+                "标题1 | 标题2 | 标题3\n" +
+                ":----------- | :-----------: | -----------:\n" +
+                "Left         | Center        | Right\n" +
+                "Left         | Center        | Right\n" +
+                "\n" +
+                "```lang-markdown\n" +
+                "标题1 | 标题2 | 标题3\n" +
+                ":----------- | :-----------: | -----------:\n" +
+                "Left         | Center        | Right\n" +
+                "Left         | Center        | Right\n" +
+                "```\n");
+        svnFileDto.setParentPath("trunk");
+        svnFileDto.setExtension("md");
+        svnFileDto.setCommitRevision(1);
 
-        return null;
+        return svnFileDto;
     }
 
     /**
      * check if the repository name exists
      *
-     * @param name repository name
+     * @param projectId project ID
+     * @param name      repository name
      * @return boolean
      */
-    private boolean repositoryNameExists(String name) {
-        HashMap<String, Object> params = new HashMap<>(1);
+    private boolean repositoryNameExists(Integer projectId, String name) {
+        HashMap<String, Object> params = new HashMap<>(2);
+        params.put("projectId", projectId);
         params.put("name", name);
         return commonDAO.checkExists("Repository.selectCountByName", params);
     }
@@ -361,11 +529,13 @@ public class RepositoryServiceImpl extends BaseService implements IRepositorySer
     /**
      * check if the repository url name exists
      *
-     * @param urlName repository name
+     * @param projectId project ID
+     * @param urlName   repository name
      * @return boolean
      */
-    private boolean repositoryUrlNameExists(String urlName) {
-        HashMap<String, Object> params = new HashMap<>(1);
+    private boolean repositoryUrlNameExists(Integer projectId, String urlName) {
+        HashMap<String, Object> params = new HashMap<>(2);
+        params.put("projectId", projectId);
         params.put("urlName", urlName);
         return commonDAO.checkExists("Repository.selectCountByUrlName", params);
     }

@@ -1,7 +1,7 @@
 package com.svnlike.utils.exception;
 
 import com.svnlike.api.model.dto.JsonResult;
-import com.svnlike.svnapi.exception.SvnApiException;
+import com.svnlike.utils.exception.SvnApiException;
 import com.svnlike.utils.enums.EMessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * handle SvnLikeException
@@ -38,6 +38,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SvnLikeException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     JsonResult svnLikeExceptionHandler(SvnLikeException e) {
+        e.printStackTrace();
         logger.error("SvnLikeException: " + e.getMessage());
         return e.toJsonResult();
     }
@@ -52,6 +53,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SvnApiException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     JsonResult svnApiExceptionHandler(SvnApiException e) {
+        e.printStackTrace();
         logger.error("SvnLikeException: " + e.getMessage());
         JsonResult jsonResult = new JsonResult(e.getMessage());
         jsonResult.setType(EMessageType.ERROR);
@@ -67,6 +69,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     JsonResult notFountHandler(NotFoundException e) {
+        e.printStackTrace();
         logger.error("NotFoundException: " + e.getMessage());
         return e.toJsonResult();
     }

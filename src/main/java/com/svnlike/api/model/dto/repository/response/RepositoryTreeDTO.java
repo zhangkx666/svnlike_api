@@ -1,7 +1,6 @@
 package com.svnlike.api.model.dto.repository.response;
 
 import com.svnlike.api.model.dto.ResponseDTO;
-import com.svnlike.api.model.entity.SVNTreeItem;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,5 +26,5 @@ public class RepositoryTreeDTO extends ResponseDTO {
     /**
      * directory
      */
-    private SVNTreeItem tree;
+    private SvnTreeDto tree;
 }

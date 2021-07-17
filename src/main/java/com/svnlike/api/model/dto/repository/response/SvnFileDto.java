@@ -1,15 +1,20 @@
-package com.svnlike.api.model.entity;
+package com.svnlike.api.model.dto.repository.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.svnlike.svnapi.model.SvnLock;
+import com.svnlike.utils.model.BaseBean;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
 
+/**
+ * @author zhangkx
+ */
 @Getter
 @Setter
-public class SVNFile extends Entity {
+public class SvnFileDto extends BaseBean {
 
     /**
      * file name
@@ -17,10 +22,15 @@ public class SVNFile extends Entity {
     private String name;
 
     /**
-     * file extension
+     * extension (file only)
      */
     @JsonProperty("ext")
     private String extension;
+
+    /**
+     * size (file only)
+     */
+    private long size;
 
     /**
      * mime type
@@ -39,40 +49,30 @@ public class SVNFile extends Entity {
     private String parentPath;
 
     /**
-     * file size
-     */
-    private long size;
-
-    /**
-     * revision
-     */
-    @JsonProperty("rev")
-    private long revision;
-
-    /**
-     * author
-     */
-    private String author;
-
-    /**
      * message (text file only)
      */
     private String content;
 
     /**
+     * revision
+     */
+    @JsonProperty("rev")
+    private long commitRevision;
+
+    /**
+     * author
+     */
+    @JsonProperty("author")
+    private String commitAuthor;
+
+    /**
      * date
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updatedAt;
+    private Date commitDate;
 
     /**
-     * commit message
+     * lockOwner (file only)
      */
-    @JsonProperty("msg")
-    private String commitMessage;
-
-    /**
-     * lockOwner
-     */
-    private SVNLockInfo lock;
+    private SvnLock lock;
 }

@@ -127,6 +127,27 @@
             <version>4.5.12</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-exec -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-exec</artifactId>
+            <version>1.3</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.zeroturnaround/zt-exec -->
+        <dependency>
+            <groupId>org.zeroturnaround</groupId>
+            <artifactId>zt-exec</artifactId>
+            <version>1.12</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.dom4j/dom4j -->
+        <dependency>
+            <groupId>org.dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>2.1.3</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
         <dependency>
             <groupId>org.jetbrains</groupId>
@@ -135,11 +156,11 @@
         </dependency>
 
         <!-- svnapi.svnlike.com by @zhangkx666 -->
-        <dependency>
-            <groupId>svnlike.com</groupId>
-            <artifactId>svnapi</artifactId>
-            <version>0.0.2</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>svnlike.com</groupId>-->
+<!--            <artifactId>svnapi</artifactId>-->
+<!--            <version>0.0.3</version>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>

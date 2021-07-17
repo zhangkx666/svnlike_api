@@ -19,7 +19,7 @@ import java.util.TimeZone;
 /**
  * @author zhangkx
  */
-@EnableCaching
+//@EnableCaching
 @EnableAspectJAutoProxy
 @SpringBootApplication(scanBasePackages = {
         "com.svnlike.api",

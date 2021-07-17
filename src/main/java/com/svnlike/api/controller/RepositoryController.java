@@ -1,15 +1,14 @@
 package com.svnlike.api.controller;
 
 import com.svnlike.api.model.dto.JsonResult;
-import com.svnlike.api.model.dto.repository.request.RepositoryConditionDTO;
 import com.svnlike.api.model.dto.repository.request.RepositoryFileDTO;
 import com.svnlike.api.model.dto.repository.request.RepositoryInputDTO;
 import com.svnlike.api.model.dto.repository.request.RepositoryTreeConditionDTO;
-import com.svnlike.api.model.dto.repository.response.RepositoryDTO;
-import com.svnlike.api.model.entity.SVNFile;
-import com.svnlike.api.model.entity.SVNTreeItem;
+import com.svnlike.api.model.dto.repository.response.SvnFileDto;
+import com.svnlike.api.model.dto.repository.response.SvnTreeDto;
 import com.svnlike.api.model.po.RepositoryPO;
 import com.svnlike.api.service.IRepositoryService;
+import com.svnlike.svnapi.model.SvnEntry;
 import com.svnlike.utils.exception.SvnLikeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,57 +34,79 @@ public class RepositoryController extends BaseController {
         this.repositoryService = repositoryService;
     }
 
-    /**
-     * Get repositories
-     *
-     * @return JsonResult
-     */
-    @RequestMapping(method = RequestMethod.GET)
-    public List<RepositoryDTO> index(RepositoryConditionDTO input) {
-        List<RepositoryPO> repositoryPOList = repositoryService.getRepositoryList(input);
-        List<RepositoryDTO> repositoryDTOList = new ArrayList<>();
-        repositoryPOList.forEach(item -> repositoryDTOList.add(item.convertTo(RepositoryDTO.class)));
-
-        System.out.println("******************************************");
-        System.out.println(System.getProperty("sun.jnu.encoding"));
-        return repositoryDTOList;
-    }
+//    /**
+//     * Get repositories
+//     *
+//     * @return JsonResult
+//     */
+//    @RequestMapping(method = RequestMethod.GET)
+//    public List<RepositoryDTO> index(RepositoryConditionDTO input) {
+//        List<RepositoryPO> repositoryPOList = repositoryService.getRepositoryList(input);
+//        List<RepositoryDTO> repositoryDTOList = new ArrayList<>();
+//        repositoryPOList.forEach(item -> repositoryDTOList.add(item.convertTo(RepositoryDTO.class)));
+//
+//        System.out.println("******************************************");
+//        System.out.println(System.getProperty("sun.jnu.encoding"));
+//        return repositoryDTOList;
+//    }
 
     /**
      * Get repository by repository name
+     * url: /repository/svnlike/api_doc
      *
      * @param projectUrlName    project name
      * @param repositoryUrlName repository name
      * @return JsonResult
      */
     @RequestMapping(method = RequestMethod.GET, value = "/{projectUrlName}/{repositoryUrlName}")
-    public RepositoryPO show(@PathVariable(value = "projectUrlName") String projectUrlName,
-                             @PathVariable(value = "repositoryUrlName") String repositoryUrlName) {
+    public RepositoryPO showByUrl(@PathVariable(value = "projectUrlName") String projectUrlName,
+                                  @PathVariable(value = "repositoryUrlName") String repositoryUrlName) {
         return repositoryService.getRepositoryByUrlName(projectUrlName, repositoryUrlName);
     }
 
     /**
-     * Get repository tree
+     * Get repository by repository id
+     * url: /repository/1
      *
-     * @param name repository name
+     * @param repositoryId repository id
      * @return JsonResult
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/{name}/tree")
-    public SVNTreeItem tree(@PathVariable("name") String name, RepositoryTreeConditionDTO input) {
-        return repositoryService.getRepositoryTreeByName(name, input.getPath(), input.getGetAll());
+    @RequestMapping(method = RequestMethod.GET, value = "/{repositoryId}")
+    public RepositoryPO showById(@PathVariable(value = "repositoryId") Integer repositoryId) {
+        return repositoryService.getRepositoryById(repositoryId);
+    }
+
+    /**
+     * Get repository tree
+     * /repository/1/tree?path=
+     *
+     * @param repositoryId repository id
+     * @param input        RepositoryTreeConditionDTO
+     * @return JsonResult
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/{repositoryId}/tree")
+    public List<SvnTreeDto> tree(@PathVariable(value = "repositoryId") Integer repositoryId,
+                                 RepositoryTreeConditionDTO input) {
+
+        List<SvnEntry> list = repositoryService.getRepositoryTree(repositoryId, input.getPath());
+        List<SvnTreeDto> outputList = new ArrayList<>();
+        list.forEach(svnEntry -> outputList.add(svnEntry.convertTo(SvnTreeDto.class)));
+        return outputList;
     }
 
     /**
      * get file
+     * /repository/1/file?path=
      *
-     * @param name  repository name
-     * @param input RepositoryFileDTO
+     * @param repositoryId repository id
+     * @param input        RepositoryFileDTO
      * @return JsonResult
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/{name}/file")
-    public SVNFile file(@PathVariable("name") String name, RepositoryFileDTO input) {
-        return repositoryService.getRepositoryFile(name, input.getPath());
+    @RequestMapping(method = RequestMethod.GET, value = "/{repositoryId}/file")
+    public SvnFileDto file(@PathVariable(value = "repositoryId") Integer repositoryId, RepositoryFileDTO input) {
+        return repositoryService.getRepositoryFile(repositoryId, input.getPath());
     }
+
 
     /**
      * Create repository

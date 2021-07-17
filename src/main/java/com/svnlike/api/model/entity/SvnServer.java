@@ -1,6 +1,6 @@
 package com.svnlike.api.model.entity;
 
-import com.svnlike.api.model.BaseBean;
+import com.svnlike.utils.model.BaseBean;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -80,12 +80,12 @@
     <select id="selectCountByName" parameterType="java.util.HashMap" resultType="java.lang.Long">
         SELECT count(id) AS count
         FROM repository
-        WHERE name = #{name};
+        WHERE project_id = #{projectId} AND name = #{name};
     </select>
 
     <select id="selectCountByUrlName" parameterType="java.util.HashMap" resultType="java.lang.Long">
         SELECT count(id) AS count
         FROM repository
-        WHERE url_name = #{urlName};
+        WHERE project_id = #{projectId} AND url_name = #{urlName};
     </select>
 </mapper>

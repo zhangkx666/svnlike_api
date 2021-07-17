@@ -2,10 +2,9 @@ package com.svnlike.api.service;
 
 import com.svnlike.api.model.dto.repository.request.RepositoryConditionDTO;
 import com.svnlike.api.model.dto.repository.request.RepositoryInputDTO;
-import com.svnlike.api.model.entity.Repository;
-import com.svnlike.api.model.entity.SVNFile;
-import com.svnlike.api.model.entity.SVNTreeItem;
+import com.svnlike.api.model.dto.repository.response.SvnFileDto;
 import com.svnlike.api.model.po.RepositoryPO;
+import com.svnlike.svnapi.model.SvnEntry;
 import com.svnlike.utils.exception.SvnLikeException;
 
 import javax.validation.Valid;
@@ -45,7 +44,7 @@ public interface IRepositoryService {
     /**
      * Get repository by url name
      *
-     * @param projectUrlName project url name
+     * @param projectUrlName    project url name
      * @param repositoryUrlName repository url name
      * @return Repository
      */
@@ -75,32 +74,31 @@ public interface IRepositoryService {
      */
     void deleteRepositoryById(int id);
 
-    /**
-     * Get repository tree
-     *
-     * @param id     repositoryId
-     * @param path   repository path
-     * @param getALl get all children
-     * @return SVNTreeItem
-     */
-    SVNTreeItem getRepositoryTreeById(int id, String path, Boolean getALl);
+//    /**
+//     * Get repository tree
+//     *
+//     * @param id     repositoryId
+//     * @param path   repository path
+//     * @param getALl get all children
+//     * @return SVNTreeItem
+//     */
+//    SVNTreeItem getRepositoryTreeById(int id, String path, Boolean getALl);
 
     /**
      * get repository tree by name
-     * @param repositoryName           repository name
-     * @param path           repository path
-     * @param getALl         get all children
+     *
+     * @param repositoryId repository id
+     * @param path         repository path
      * @return SVNTreeItem
      */
-    SVNTreeItem getRepositoryTreeByName(String repositoryName, String path, Boolean getAll);
+    List<SvnEntry> getRepositoryTree(Integer repositoryId, String path);
 
     /**
      * get file message
-     * @param repositoryName repository name
-     * @param path path
+     *
+     * @param repositoryId repository id
+     * @param path         path
      * @return string file message
      */
-    SVNFile getRepositoryFile(String repositoryName, String path);
-
-
+    SvnFileDto getRepositoryFile(Integer repositoryId, String path);
 }

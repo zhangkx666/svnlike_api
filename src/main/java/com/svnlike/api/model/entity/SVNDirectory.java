@@ -1,6 +1,7 @@
 package com.svnlike.api.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.svnlike.api.model.dto.repository.response.SvnFileDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -55,7 +56,7 @@ public class SVNDirectory extends Entity {
     /**
      * files
      */
-    private List<SVNFile> files;
+    private List<SvnFileDto> files;
 
     /**
      * sub directories
